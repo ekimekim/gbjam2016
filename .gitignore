@@ -1,3 +1,6 @@
 *.o
 game.sym
 game.gb
+/pngtoasm/.vs
+/pngtoasm/pngtoasm/bin
+/pngtoasm/pngtoasm/obj
