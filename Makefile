@@ -5,9 +5,10 @@
 
 ASMS := $(wildcard *.asm)
 OBJS := $(ASMS:.asm=.o)
+INCLUDES := $(wildcard include/*.asm)
 
-%.o: %.asm
-	rgbasm -v -o $@ $^
+%.o: %.asm $(INCLUDES)
+	rgbasm -i include/ -v -o $@ $^
 
 game.gb: $(OBJS)
 	rgblink -n game.sym -o $@ $^

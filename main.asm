@@ -3,7 +3,8 @@ section "Main", ROM0
 
 Start::
 	; Actual execution starts here
-	ld HL, $8000
-	ld  [HL], $f0
+
+	; Set stack to top of internal RAM
+	ld SP, StackTop
 	
 	jp HaltForever
