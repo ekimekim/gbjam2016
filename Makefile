@@ -8,7 +8,7 @@ OBJS := $(ASMS:.asm=.o)
 INCLUDES := $(wildcard include/*.asm)
 
 %.i: %.asm
-	sed s/\\t//g $^ > $@
+	tr -d \t < $^ > $@
 
 %.o: %.i $(INCLUDES)
 	rgbasm -i include/ -v -o $@ $^
