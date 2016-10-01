@@ -11,7 +11,7 @@ namespace pngtoasm
 {
     class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             if(args.Length < 2
                 || args[1].ToLower().Contains("help")
@@ -19,7 +19,7 @@ namespace pngtoasm
             {
                 Console.WriteLine("pngtoasm -o output path -dir assets directory -paint\n(optional)-paint paints bad pixels");
 
-                return;
+                return 1;
             }
 
             try
@@ -44,10 +44,12 @@ namespace pngtoasm
                     writer.WriteLineUnix(line);
                 writer.Close();
                 Console.WriteLine(outputPath);
+                return 0;
             }
             catch (Exception e)
             {
-                //Console.WriteLine(e);
+                Console.WriteLine(e);
+                return 1;
             }
         }
 
@@ -86,19 +88,10 @@ namespace pngtoasm
                     {
                         var line = new StringBuilder(14);
                         line.Append("word '");
-                        for (int x = 0; x < 4; x++)
+                        for (int x = 0; x < 8; x++)
                         {
                             var palletIndex = Array.IndexOf(colorPallet, image.GetPixel(xTile + x, yTile + y));
-                            line.Append(palletIndex.ToInt4String());
-                        }
-                        lines.Add(line.ToString());
-
-                        line = new StringBuilder(14);
-                        line.Append("word '");
-                        for (int x = 4; x < 8; x++)
-                        {
-                            var palletIndex = Array.IndexOf(colorPallet, image.GetPixel(xTile + x, yTile + y));
-                            line.Append(palletIndex.ToInt4String());
+                            line.Append(palletIndex);
                         }
                         lines.Add(line.ToString());
                     }
