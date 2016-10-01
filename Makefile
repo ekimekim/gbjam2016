@@ -13,7 +13,7 @@ game.gb: $(OBJS)
 	rgblink -n game.sym -o $@ $^
 	rgbfix -v -p 0 $@
 
-run: game.gb
+bgb: game.gb
 	bgb $<
 
 clean:
