@@ -110,20 +110,21 @@ TestLevel:
 	db $00, $81, $09 ; lush tree 3
 	db $00, $81, $0d ; lush tree 4
 	db $00, $ff, $02 ; lush building
-EndTestLevel:
+EndTestLevel::
+TestLevelSize EQU EndTestLevel - TestLevel
 
 LoadTestLevel::
+	ld BC, TestLevelSize
 	ld HL, TestLevel
 	ld DE, Level
 .loop
-	ld A, [HL]
+	ld A, [HL+] ; also increments HL
 	ld [DE], A
-	sub HL, EndTestLevel
-	ld BC, HL
-	add HL, EndTestLevel
+	inc DE
+	dec BC
 	xor A
 	cp C
-	jr nz .loop
+	jr nz, .loop
 	cp B
-	jr nz .loop
+	jr nz, .loop
 	ret
