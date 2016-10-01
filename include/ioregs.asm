@@ -51,3 +51,57 @@ InterruptFlags EQU $ff0f
 ; 7: Global display enable/disable: 0 to turn off screen, 1 to turn on
 ; Default value $91 = %10010001 = enabled display, signed tile map, background only
 LCDControl EQU $ff40
+
+; "STAT" LCD Status register. Its value changes as the LCD goes through draw cycles.
+; It has 4 "modes". The current mode is indicated by the bits 0-1 as a 2 bit mode value:
+; 00: During H-Blank
+; 01: During V-Blank
+; 10: While searching sprite ram. The CPU cannot access the sprite ram during this mode.
+; 11: While transferring data. The CPU cannot access sprite ram or vram during this mode.
+; You can also write to bits 2-6 to set the conditions under which a LCDC Interrupt should occur:
+; bit 3: When mode becomes H-Blank
+; bit 4: When mode becomes V-Blank (how is this different from vblank interrupt?)
+; bit 5: When mode becomes Sprite search
+; bit 6: When the LY register reaches a certain condition according to bit 2:
+;        When bit 2 is 0: Trigger when LY != LYC
+;        When bit 2 is 1: Trigger when LY == LYC
+LCDStatus EQU $ff41
+
+; "SCY" Scroll Y register. Controls scroll position of the background.
+ScrollY EQU $ff42
+; "SCX" Scroll X register. Controls scroll position of the background.
+ScrollX EQU $ff43
+
+; "LY" LCD Y-coordinate register. Contains the current y-coordinate that the screen
+; is drawing. Contains values 0-143 while drawing, 144-153 during VBlank.
+; Writing to this register will set it to 0.
+; You should probably just never touch this unless you're doing something funky.
+LCDYCoordiate EQU $ff44
+; "LYC" LCD Y-coordinate comparison register. Is used when deciding whether to trigger an interrupt,
+; see STAT register.
+LCDYCompare EQU $ff45
+
+; "DMA" Direct Memory Access Transfer control register.
+; DMA transfer allows you to rapidly copy data from elsewhere in memory ($0000-$f19f) to the sprite memory
+; area ($fe00-$fe9f). While this is happening, only high ram ($ff80-$fffe) can be used.
+; DMA transfer is initiated by writing the upper byte of the start source address to this register.
+; eg. to start the transfer from address $1200, you would write $12.
+; The DMA will complete 448 cycles later, best calculated as 28 loops of {dec a; jr nz}
+DMATransfer EQU $ff46
+
+; "BGP" Background and Window palette data
+TileGridPalette EQU $ff47
+; "OBP0", "OBP1" Sprite data palettes
+SpritePalette EQU $ff48
+AltSpritePalette EQU $ff49
+
+; "WY", "WX" Window X and Y position.
+; The window overwrites the background on the display, unlike sprites which are transparent.
+; The actual on-screen coordinates of the window's top left are (WX-7, WY).
+; If X or Y is set greater than 166 or 143 respectively, window will not show.
+WindowY EQU $ff4a
+WindowX EQU $ff4b
+
+; "IE" Interrupt Enable flags. Write to this register to selectively disable interrupts.
+; Bits 0-4 control off/on for respectively: VBlank, LCDC, Timer, Serial, Joypad
+InterruptsEnabled EQU $ffff
