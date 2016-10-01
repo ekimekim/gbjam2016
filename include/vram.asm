@@ -6,9 +6,8 @@
 BaseTileMap EQU $8000
 OverlapTileMap EQU $8800
 AltTileMap EQU $9000
-; Background map is 32x32 grid of tile numbers from $9800-$9bff
-; It can be scrolled using scroll registers.
-Background EQU $9800
-; Window map is 32x32 grid of tile numbers that may overlay the background
-; starting from coordinates controlled by window registers
-Window EQU $9c00
+; Tile data is 32x32 grid of tile numbers from $9800-$9bff
+; Background and Window are windows into this area
+TileGrid EQU $9800
+; You can switch between which TileGrid is used by background or window using LCDC register
+AltTileGrid EQU $9c00
