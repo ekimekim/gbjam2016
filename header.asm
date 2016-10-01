@@ -61,8 +61,7 @@ _Start:
 	nop
 	jp Start
 _Header::
-	; Linker will fill this in
-	ds 77
+	ds 76 ; Linker will fill this in
 
 section "Main", ROM0
 
