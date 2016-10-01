@@ -2,28 +2,28 @@
 ; Warning: each of these sections can only be 8b long!
 section "Restart handler 0", ROM0 [$00]
 Restart0::
-	jp Halt
-section "Restart handler 0", ROM0 [$08]
+	jp HaltForever
+section "Restart handler 1", ROM0 [$08]
 Restart1::
-	jp Halt
-section "Restart handler 0", ROM0 [$10]
+	jp HaltForever
+section "Restart handler 2", ROM0 [$10]
 Restart2::
-	jp Halt
-section "Restart handler 0", ROM0 [$18]
+	jp HaltForever
+section "Restart handler 3", ROM0 [$18]
 Restart3::
-	jp Halt
-section "Restart handler 0", ROM0 [$20]
+	jp HaltForever
+section "Restart handler 4", ROM0 [$20]
 Restart4::
-	jp Halt
-section "Restart handler 0", ROM0 [$28]
+	jp HaltForever
+section "Restart handler 5", ROM0 [$28]
 Restart5::
-	jp Halt
-section "Restart handler 0", ROM0 [$30]
+	jp HaltForever
+section "Restart handler 6", ROM0 [$30]
 Restart6::
-	jp Halt
-section "Restart handler 0", ROM0 [$38]
+	jp HaltForever
+section "Restart handler 7", ROM0 [$38]
 Restart7::
-	jp Halt
+	jp HaltForever
 
 ; Warning: each of these sections can only be 8b long!
 section "VBlank Interrupt handler", ROM0 [$40]
@@ -50,10 +50,10 @@ IntJoypad::
 
 section "Header Unused Area", ROM0 [$68]
 ; I'm going to use this space for some very core util functions
-Halt::
+HaltForever::
 	halt
 	; halt can be recovered from after an interrupt or reset, so halt again
-	jp Halt
+	jp HaltForever
 
 section "Header", ROM0 [$100]
 ; This must be nop, then a jump, then blank up to 150
@@ -62,8 +62,10 @@ _Start:
 	jp Start
 _Header::
 	; Linker will fill this in
-	ds $150 - _Header
+	ds 77
+
+section "Main", ROM0
 
 Start::
 	; Actual execution starts here
-	jp Halt
+	jp HaltForever
