@@ -62,9 +62,3 @@ _Start:
 	jp Start
 _Header::
 	ds 76 ; Linker will fill this in
-
-section "Main", ROM0
-
-Start::
-	; Actual execution starts here
-	jp HaltForever
