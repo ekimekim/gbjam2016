@@ -1,16 +1,13 @@
 
 # avoid implicit rules for clarity
-.SUFFIXES: .asm .o .gb .i
+.SUFFIXES: .asm .o .gb
 .PHONY: run clean
 
 ASMS := $(wildcard *.asm)
 OBJS := $(ASMS:.asm=.o)
 INCLUDES := $(wildcard include/*.asm)
 
-%.i: %.asm
-	tr -d \\t < $< > $@
-
-%.o: %.i $(INCLUDES)
+%.o: %.asm $(INCLUDES)
 	rgbasm -i include/ -v -o $@ $<
 
 game.gb: $(OBJS)
