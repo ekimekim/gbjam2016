@@ -29,6 +29,7 @@ Restart7::
 section "VBlank Interrupt handler", ROM0 [$40]
 ; triggered upon VBLANK period starting
 IntVBlank::
+	call Draw
 	reti
 section "LCDC Interrupt handler", ROM0 [$48]
 ; Also known as STAT handler

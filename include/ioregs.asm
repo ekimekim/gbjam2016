@@ -33,7 +33,7 @@ TimerModulo EQU $ff06
 TimerControl EQU $ff07
 
 ; "IF" Interrupt flag register. The hardware will set a bit in this register when an interrupt
-; would be generated, even if interrupts are currently disabled. Bits respectively refer to
+; would be generated, even if interrupts are currently disabled. Bits respectively (from 0 to 5) refer to
 ; VBlank, LCDC, Timer, Serial and Joystick interrupts.
 InterruptFlags EQU $ff0f
 

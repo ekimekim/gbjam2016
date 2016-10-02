@@ -1,7 +1,6 @@
 
 ; Copy BC bytes from [HL] to [DE]. Clobbers A.
-LongCopy:
-	MACRO
+LongCopy: MACRO
 .loop\@
     ld A, [HL+]
     ld [DE], A
