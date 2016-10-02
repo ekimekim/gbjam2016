@@ -4,3 +4,5 @@ WorkingGridPartNumber EQU $ff80
 
 ; Set to 1 when timer fires, used by the main loop to wait until timer has fired
 TimerFired EQU $ff81
+
+TimerCounterSlow EQU $ff82

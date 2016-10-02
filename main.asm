@@ -48,7 +48,11 @@ Start::
 	xor A
 	ld [TimerCounter], A ; reset timer
 	ld [TimerFired], A ; unset "timer has fired" flag
-
+	
+	ld A, [TimerCounterSlow] ; iterate slow timer
+	inc A
+	ld [TimerCounterSlow], A
+	
 	call Update
 
 .timerloop
