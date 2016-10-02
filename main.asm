@@ -39,5 +39,13 @@ Start::
 
 ; Called upon vblank
 Draw::
+	push AF
+	push BC
+	push DE
+	push HL
 	call CopyWorkingGrid ; this part is vblank-sensitive
-	ret
+	pop HL
+	pop DE
+	pop BC
+	pop AF
+	reti
