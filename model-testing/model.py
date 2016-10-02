@@ -2,7 +2,8 @@ import argh
 import time
 
 # for temp * fuel * COEF
-BURN_COEF = ( 1. / 256 ) * ( 1. / 192) * 16 # full temp and full fuel = 64 burn rate
+#BURN_COEF = ( 1. / 256 ) * ( 1. / 192) * 16 # full temp and full fuel = 64 burn rate
+BURN_COEF = 1. / 3072 # (1 / 256) / 12
 BURN_TO_TEMP_COEF = 3
 
 # for temp * COEF
@@ -28,20 +29,18 @@ def step():
 				grid[y][x] = (temp, fuel - burn_rate)
 				dt[y][x] += burn_rate * BURN_TO_TEMP_COEF
 
-			# debug
-#			if burn_temp > 0:
-#				print burn_temp, fuel,  burn_temp * fuel * BURN_COEF
-
 			# move heat to neighbors
 			transfer = max(1, int(temp * TRANSFER_COEF))
-			neighbors = 3
+			neighbors = 0
 			for dy, dx in [(-1, 0), (1, 0), (0, -1), (0, 1)]: # no diagonals
 				if (0 <= y + dy < maxY) and (0 <= x + dx < maxX):
 					dt[y+dy][x+dx] += transfer
-					neighbors += 6
-				else:
 					neighbors += 1
-			dt[y][x] -= transfer * neighbors / 6
+			if neighbors != 4:
+				extra = 3 * transfer / 4
+			else:
+				extra = transfer / 2
+			dt[y][x] -= transfer * neighbors + extra
 
 	# apply dt's
 	for y in range(maxY):
@@ -51,14 +50,14 @@ def step():
 
 path_grid = [
 	[(32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0)],
-	[(32, 0), (32, 0), (128,64), (32, 50), (32, 50), (32, 50), (32, 50), (32, 0)],
-	[(32, 0), (32, 0), (60, 50), (32, 50), (32, 50), (32, 50), (32, 50), (32, 0)],
-	[(32, 0), (32, 0), (32, 20), (32, 0), (32, 0), (32, 0), (32, 150), (32, 0)],
+	[(32, 0), (32, 0), (128,128), (32, 64), (32, 64), (32, 64), (32, 64), (32, 0)],
+	[(32, 0), (32, 0), (60, 64), (32, 64), (32, 64), (32, 64), (32, 64), (32, 0)],
+	[(32, 0), (32, 0), (32, 48), (32, 0), (32, 64), (32, 64), (32, 196), (32, 0)],
 
-	[(32, 0), (32, 0), (32, 10), (32, 0), (32, 0), (32, 0), (32, 150), (32, 0)],
-	[(32, 0), (32, 5), (32, 5), (32, 5), (32, 0), (32, 0), (32, 200), (32, 0)],
-	[(32, 0), (32, 5), (32, 5), (32, 5), (32, 0), (32, 0), (32, 0), (32, 0)],
-	[(32, 0), (32, 5), (32, 5), (32, 5), (32, 0), (32, 0), (32, 0), (32, 0)],
+	[(32, 0), (32, 0), (32, 32), (32, 0), (32, 0), (32, 0), (32, 196), (32, 0)],
+	[(32, 0), (32, 16), (32, 16), (32, 16), (32, 0), (32, 0), (32, 255), (32, 0)],
+	[(32, 0), (32, 16), (32, 16), (32, 32), (32, 32), (32, 32), (32, 32), (32, 0)],
+	[(32, 0), (32, 16), (32, 16), (32, 16), (32, 0), (32, 0), (32, 0), (32, 0)],
 ]
 
 def new_sea_grid():
@@ -70,7 +69,9 @@ corner_hot_sea_grid[0][0] = (255, 128)
 mid_cool_sea_grid = new_sea_grid()
 mid_cool_sea_grid[9][9] = (64, 128)
 
-grid = mid_cool_sea_grid
+#grid = mid_cool_sea_grid
+#grid = corner_hot_sea_grid
+grid = path_grid
 
 def display(hide):
 	def color(c, s, hide):
@@ -86,7 +87,7 @@ def display(hide):
 			return tempcolor
 		if fuel < 32:
 			return '0' # black
-		if fuel < 64:
+		if fuel < 96:
 			return '2' # green
 		return '2;1' # bold green
 		
