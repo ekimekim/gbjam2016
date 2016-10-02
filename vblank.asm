@@ -54,6 +54,10 @@ CopyWorkingGrid::
 
 	ld A, [WorkingGridPartNumber]
 	inc A
-	and %00000011
+	; if A = 3, reset A
+	cp $03
+	jr nz, .next
+	xor A
+.next
 	ld [WorkingGridPartNumber], A
 	ret
