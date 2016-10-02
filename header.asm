@@ -1,4 +1,6 @@
 
+INCLUDE "hram.asm"
+
 ; Warning: each of these sections can only be 8b long!
 section "Restart handler 0", ROM0 [$00]
 Restart0::
@@ -38,6 +40,8 @@ IntLCDC::
 section "Timer Interrupt handler", ROM0 [$50]
 ; A configurable amount of time has passed
 IntTimer::
+	ld A, 1
+	ld [TimerFired], A
 	reti
 section "Serial Interrupt handler", ROM0 [$58]
 ; Serial transfer is complete

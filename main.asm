@@ -1,5 +1,5 @@
-include "vram.asm"
 include "ioregs.asm"
+include "hram.asm"
 
 section "Main", ROM0
 
@@ -15,17 +15,22 @@ Start::
 
 	; Initialize VRAM
 	call LoadTileData
-	; Set pallettes
-	ld A, %11100100
-	ld [TileGridPalette], A
-	ld [SpritePalette], A
 
 	; Initialize game state
 	call LoadTestLevel
 	call RenderBlocks
 
-	; Which interrupts we want: Only VBlank
-	ld a, %00000001
+	; Initialize other settings
+	; Set pallettes
+	ld A, %11100100
+	ld [TileGridPalette], A
+	ld [SpritePalette], A
+	; Set timer frequency (16kHz freq = 64Hz interrupt)
+	ld A, %00000111 ; enabled, mode 4 (2^14 Hz)
+	ld [TimerControl], A
+
+	; Which interrupts we want: VBlank, Timer
+	ld a, %00000101
 	ld [InterruptsEnabled], a
 
 	xor a
@@ -34,7 +39,20 @@ Start::
 	; ok, we're good to go
 	EI
 
-	jp HaltForever
+.mainloop:
+	; Reset timer and TimerFired flag
+	xor A
+	ld [TimerCounter], A ; reset timer
+	ld [TimerFired], A ; unset "timer has fired" flag
+
+	call Update
+
+.timerloop
+	ld A, [TimerFired]
+	and A
+	jr nz, .mainloop ; if timer has occurred, time for the next update
+	halt ; otherwise wait until next interrupt
+	jr .timerloop ; then check again if it was the interrupt we wanted
 
 
 ; Called upon vblank
@@ -49,3 +67,7 @@ Draw::
 	pop BC
 	pop AF
 	reti
+
+
+Update::
+	ret
