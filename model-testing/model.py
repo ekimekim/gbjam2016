@@ -34,12 +34,14 @@ def step():
 
 			# move heat to neighbors
 			transfer = max(1, int(temp * TRANSFER_COEF))
-			neighbors = 0
+			neighbors = 3
 			for dy, dx in [(-1, 0), (1, 0), (0, -1), (0, 1)]: # no diagonals
 				if (0 <= y + dy < maxY) and (0 <= x + dx < maxX):
 					dt[y+dy][x+dx] += transfer
+					neighbors += 6
+				else:
 					neighbors += 1
-			dt[y][x] -= transfer * neighbors + transfer/2
+			dt[y][x] -= transfer * neighbors / 6
 
 	# apply dt's
 	for y in range(maxY):
