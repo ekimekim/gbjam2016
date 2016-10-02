@@ -12,3 +12,13 @@ LongCopy: MACRO
     cp B
     jr nz, .loop\@
 	ENDM
+
+; Copy B bytes from [DL] to [DE]. Clobbers A.
+Copy: MACRO
+.loop\@
+	ld A, [HL+]
+	ld [DE], A
+	inc DE
+	dec B
+	jr nz, .loop\@
+	ENDM

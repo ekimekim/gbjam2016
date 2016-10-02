@@ -10,6 +10,9 @@ Start::
 	; Set stack to top of internal RAM
 	ld SP, StackTop
 
+	; Initialize HRAM
+	call LoadHRAMData
+
 	; Wait for next vblank
 	ld HL, InterruptFlags
 	ld [HL], $0 ; reset flags
@@ -31,5 +34,5 @@ Start::
 
 ; Called upon vblank
 Draw::
-	call RenderBlocks
+	call CopyWorkingGrid ; this part is vblank-sensitive
 	ret

@@ -17,11 +17,6 @@ section "Level data", WRAM0
 ; Total of 1024 blocks = 3072 bytes = $c00 bytes
 Level::
 	ds $c00
-; for testing, let's define our own vram so we don't need to think about vblank
-
-section "test tile grid", WRAMX
-TestTileGrid::
-	ds $400
 
 ; note on tile layout:
 ; TileHighFire: HighFire
@@ -91,25 +86,25 @@ BlockToTile::
 	ret
 
 
-; for each block in level; write appropriate tile to TileGrid
+; for each block in level; write appropriate tile to WorkingGrid
 RenderBlocks::
 	ld BC, $0000
 	ld HL, Level
 .loop
-	ld DE, TestTileGrid
-	; DE = TileGrid + BC to get index into tilegrid
-	ld A, TestTileGrid & $ff ; lower byte
+	ld DE, WorkingGrid
+	; DE = WorkingGrid + BC to get index into tilegrid
+	ld A, WorkingGrid & $ff ; lower byte
 	add C ; possibly set carry
 	ld E, A
-	ld A, (TestTileGrid & $ff00) >> 8 ; higher byte
-	adc B ; A = TileGrid upper + B + carry
+	ld A, (WorkingGrid & $ff00) >> 8 ; higher byte
+	adc B ; A = WorkingGrid upper + B + carry
 	ld D, A
 	push BC
 	push DE
 	call BlockToTile ; put result in A and HL += 2
 	pop DE
 	pop BC
-	ld [DE], A ; write to TileGrid
+	ld [DE], A ; write to WorkingGrid
 	inc HL
 	inc BC
 	xor A ; A = 0
