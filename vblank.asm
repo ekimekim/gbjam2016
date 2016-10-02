@@ -9,11 +9,21 @@ Section "Working Background Grid", WRAMX
 WorkingGrid::
 	ds 20*18
 
-Section "VBlank Drawing Routine", ROM0
+NUM_SPRITES EQU 3
+; WorkingSprites is an array of sprite structs (OAM entries)
+; You should write things here for later copying to true OAM memory on a VBlank
+WorkingSprites::
+	ds 4 * NUM_SPRITES
+EndWorkingSprites:
+WorkingSpritesSize EQU EndWorkingSprites - WorkingSprites
 
-; We draw a quarter of the screen at a time, that's all we have time for
+
+Section "VBlank Drawing Routines", ROM0
+
+; We draw a quarter of the Working Grid at a time, that's all we have time for
 ; We track the current quarter in WorkingGridPartNumber
-CopyWorkingGrid::
+; We copy the full WorkingSprites every time
+CopyWorkingVars::
 	ld HL, SP+0
 	ld B, H
 	ld C, L ; save SP in BC
@@ -66,10 +76,6 @@ CopyWorkingGrid::
 	ld l, a
 	jr nz, .loop ; break when L has fully wrapped
 
-	ld H, B
-	ld L, C
-	ld SP, HL
-
 	ld A, [WorkingGridPartNumber]
 	inc A
 	; if A = 3, reset A
@@ -78,4 +84,28 @@ CopyWorkingGrid::
 	xor A
 .next
 	ld [WorkingGridPartNumber], A
+
+	; copy working sprites
+	; source in SP
+	ld HL, WorkingSprites
+	ld SP, HL
+	; dest in HL
+	ld HL, SpriteTable
+	; full unroll is easier than a loop var
+	REPT (WorkingSpritesSize / 2) - 1
+	pop DE
+	ld [HL], E
+	inc L
+	ld [HL], D
+	inc L
+	ENDR
+	pop DE
+	ld [HL], E
+	inc L
+	ld [HL], D
+
+	ld H, B
+	ld L, C
+	ld SP, HL
+
 	ret

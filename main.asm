@@ -43,7 +43,7 @@ Draw::
 	push BC
 	push DE
 	push HL
-	call CopyWorkingGrid ; this part is vblank-sensitive
+	call CopyWorkingVars; this part is vblank-sensitive
 	pop HL
 	pop DE
 	pop BC
