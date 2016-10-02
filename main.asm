@@ -87,4 +87,7 @@ Update::
 
 	call UpdateFireman
 
+	call RunStep
+	call RenderBlocks
+
 	ret
