@@ -1,4 +1,7 @@
 
+INCLUDE "vram.asm"
+INCLUDE "tiledefs.asm"
+
 ; Block structure:
 ; uint8 fuel
 ; uint8 temperature
@@ -25,80 +28,91 @@ section "Block methods", ROM0
 
 ; Lookup table from type to lush threshold
 LushThresholdTable:
-	db $21, $81, $c1
+	db $20, $80, $c0
 
 ; Determine the tile to render for a given block
 ; Inputs: HL = block address
 ; Outputs: A = tile index, HL = block address + 2
-;BlockToTile::
-;	ld A, [HL] ; temperature
-;	inc HL
-;	ld B, [HL] ; fuel
-;	inc HL
-;	ld C, [HL] ; flags
-;	and $c0 ; get first 2 bits of temp
-;	cp $c0 ; is fire level 11
-;	jr nz .medium
-;	ld A, TileHighFire
-;	ret
-;.medium
-;	cp $80 ; is fire level 10
-;	jr nz .low
-;	ld A, C
-;	and $03 ; get type bits
-;	add TileMediumFire
-;	ret
-;.low
-;	ld D, TileLowFire
-;	cp $40 ; is fire level 01
-;	jr z .addStyle
-;.nofire
-;	ld D, TileBurnt
-;	ld A, B ; load fuel
-;	cp $09 ; <= 8 is burnt
-;	jr s .addStyle ; if negative, it's burnt
-;.notburnt
-;	ld D, TileNormal
-;	push HL
-;	ld HL, LushThresholdTable
-;	ld A, C
-;	and $03 ; get type bits
-;	ld D, 0
-;	ld E, A
-;	add HL, DE ; look up type in LushThresholdTable
-;	ld A, [HL] ; get lush threshold
-;	pop HL
-;	cp B ; compare to fuel
-;	jr s .addStyle ; if negative, not lush
-;.lush
-;	ld D, TileLush
-;.addStyle
-;	ld A, C ; load flags
-;	and $0f ; get style + type
-;	add D ; add tile base
-;	ret
-;
-;
-;; for each block in level; write appropriate tile to TileGrid
-;RenderBlocks::
-;	ld BC, $0000
-;	ld HL, Level
-;.loop
-;	push BC
-;	call BlockToTile ; put result in A and HL += 2
-;	pop BC
-;	ld DE, HL
-;	ld HL, TileGrid
-;	add HL, BC ; get index into TileGrid
-;	ld [HL], A ; write to TileGrid
-;	ld HL, DE
-;	inc HL
-;	inc BC
-;	xor A ; A = 0
-;	cp C
-;	jr nz .loop ; is C == 0?
-;	ld A, $04
-;	cp B
-;	jr nz .loop ; is B == 4
-;	; BC = $0400, we're done
-;	ret
+BlockToTile::
+	ld A, [HL] ; temperature
+	inc HL
+	ld B, [HL] ; fuel
+	inc HL
+	ld C, [HL] ; flags
+	and $c0 ; get first 2 bits of temp
+	cp $c0 ; is fire level 11
+	jr nz, .medium
+	ld A, TileHighFire
+	ret
+.medium
+	cp $80 ; is fire level 10
+	jr nz, .low
+	ld A, C
+	and $03 ; get type bits
+	add TileMediumFire
+	ret
+.low
+	ld D, TileLowFire
+	cp $40 ; is fire level 01
+	jr z, .addStyle
+.nofire
+	ld D, TileBurnt
+	ld A, B ; load fuel
+	; fuel < 8?
+	and %11111000 ; sets the zero flag if the result is zero, ie. A < 8
+	jr z, .addStyle ; if < 8, it's burnt
+.notburnt
+	ld DE, LushThresholdTable
+	ld A, C
+	and $03 ; get type bits
+	; DE += A
+	add E ; sets carry
+	ld E, A
+	ld A, D
+	adc $0 ; add 0 with carry
+	ld D, A
+	; DE now equals DE + A
+	ld A, [DE] ; get lush threshold
+	ld D, TileNormal
+	; compare threshold to fuel
+	sub B ; A = (threshold - fuel)
+	and %10000000 ; examine top bit: 0 is positive, 1 is negative
+	jr z, .addStyle ; if negative, threshold < fuel, so lush
+.lush
+	ld D, TileLush
+.addStyle
+	ld A, C ; load flags
+	and $0f ; get style + type
+	add D ; add tile base
+	ret
+
+
+; for each block in level; write appropriate tile to TileGrid
+RenderBlocks::
+	ld BC, $0000
+	ld HL, Level
+.loop
+	ld DE, TileGrid
+	; DE = TileGrid + BC to get index into tilegrid
+	ld A, TileGrid & $ff ; lower byte
+	add C ; possibly set carry
+	ld E, A
+	ld A, (TileGrid & $ff00) >> 8 ; higher byte
+	adc B ; A = TileGrid upper + B + carry
+	ld D, A
+	push BC
+	push DE
+	call BlockToTile ; put result in A and HL += 2
+	pop DE
+	pop BC
+	ld [DE], A ; write to TileGrid
+	inc HL
+	inc BC
+	xor A ; A = 0
+	cp C
+	jr nz, .loop ; is C == 0?
+	ld A, $04
+	cp B
+	jr nz, .loop ; is B == 4
+	; BC = $0400, we're done
+	ret
