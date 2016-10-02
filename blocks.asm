@@ -39,8 +39,7 @@ LushThresholdTable:
 ; Inputs: HL = block address
 ; Outputs: A = tile index, HL = block address + 2
 BlockToTile::
-	ld A, [HL] ; temperature
-	inc HL
+	ld A, [HL+] ; temperature (since it's A and HL, we can make a micro-optimization to inc at the same time)
 	ld B, [HL] ; fuel
 	inc HL
 	ld C, [HL] ; flags
