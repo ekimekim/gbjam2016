@@ -15,9 +15,14 @@ Start::
 
 	; Initialize VRAM
 	call LoadTileData
+	; Set pallettes
+	ld A, %11100100
+	ld [TileGridPalette], A
+	ld [SpritePalette], A
 
 	; Initialize game state
 	call LoadTestLevel
+	call RenderBlocks
 
 	; Which interrupts we want: Only VBlank
 	ld a, %00000001
