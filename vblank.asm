@@ -20,6 +20,17 @@ WorkingSpritesSize EQU EndWorkingSprites - WorkingSprites
 
 Section "VBlank Drawing Routines", ROM0
 
+; Clear all working sprites, making them all disappear
+ClearWorkingSprites::
+	ld HL, WorkingSprites
+	ld B, WorkingSpritesSize
+	xor a
+.loop
+	ld [HL+], a
+	dec B
+	jr nz, .loop
+	ret
+
 ; We draw a quarter of the Working Grid at a time, that's all we have time for
 ; We track the current quarter in WorkingGridPartNumber
 ; We copy the full WorkingSprites every time

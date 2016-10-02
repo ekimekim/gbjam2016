@@ -10,7 +10,7 @@ EndTileMapData:
 
 TileMapDataSize EQU EndTileMapData - TileMapData
 
-Section "Tile Loading methods", ROMX, BANK[1]
+Section "VRAM Init methods", ROMX, BANK[1]
 
 ; Blocks until the start of the next VBlank period
 ; Clobbers HL.
@@ -22,6 +22,18 @@ WaitForVBlank:
     jr z, .wait
 	ret
 
+; Checks that you are in vblank and waits if needed
+; Clobbers A, HL
+EnsureVBlank:
+	; check if we're in vblank
+	ld A, [LCDStatus]
+	and %00000011 ; get mode only
+	cp $01
+	ret z
+	; we're not in vblank, wait until we are then return
+	call WaitForVBlank
+	ret
+
 ; Copies tile data into vram. VBlank interrupt should be disabled.
 LoadTileData::
 	ld HL, TileMapData
@@ -29,15 +41,9 @@ LoadTileData::
 	ld BC, TileMapDataSize
 
 .loop
-	; check if we're still in vblank
-	ld A, [LCDStatus]
-	and %00000011 ; get mode only
-	cp $01
-	jr z, .inVBlank
 	push HL
-	call WaitForVBlank
+	call EnsureVBlank
 	pop HL
-.inVBlank
 	; copy a byte
 	ld A, [HL+]
 	ld [DE], A
@@ -47,5 +53,18 @@ LoadTileData::
 	cp C
 	jr nz, .loop
 	cp B
+	jr nz, .loop
+	ret
+
+; Write zeroes to sprite data
+ClearSpriteData::
+	; We should be fast enough to do this in one vblank, if we start at the beginning
+	ld B, 40 * 4 ; length of sprite table
+	xor a
+	call WaitForVBlank
+	ld HL, SpriteTable
+.loop
+	ld [HL+], a
+	dec b
 	jr nz, .loop
 	ret

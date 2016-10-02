@@ -12,4 +12,4 @@ TileGrid EQU $9800
 ; You can switch between which TileGrid is used by background or window using LCDC register
 AltTileGrid EQU $9c00
 
-SpriteTable EQU $ffe0
+SpriteTable EQU $fe00

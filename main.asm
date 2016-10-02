@@ -15,10 +15,12 @@ Start::
 
 	; Initialize VRAM
 	call LoadTileData
+	call ClearSpriteData
 
 	; Initialize game state
 	call LoadTestLevel
 	call RenderBlocks
+	call ClearWorkingSprites
 
 	; Initialize other settings
 	; Set pallettes
