@@ -1,11 +1,11 @@
 
 ; example tile map
 TileHighFire EQU 0
-TileMediumFire EQU 1
-TileLowFire EQU 4
-TileBurnt EQU 20
-TileNormal EQU 36
-TileLush EQU 52
+TileMediumFire EQU $10
+TileLowFire EQU $20
+TileBurnt EQU $30
+TileNormal EQU $40
+TileLush EQU $50
 ; 0: High fire
 ; 1: Grass medium fire
 ; 2: Tree medium fire

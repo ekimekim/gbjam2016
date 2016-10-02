@@ -202,9 +202,9 @@ namespace pngtoasm
                     iArg.Append(args[i]);
             }
 
-            outputPath = Path.GetFullPath(outputPathBuilder.ToString());
-            srcDir = Path.GetFullPath(assetDirBuilder.ToString());
-            namesPath = Path.GetFullPath(namesPathBuilder.ToString());
+            outputPath = outputPathBuilder.Length > 0 ? Path.GetFullPath(outputPathBuilder.ToString()) : null;
+            srcDir = assetDirBuilder.Length > 0 ? Path.GetFullPath(assetDirBuilder.ToString()) : null;
+            namesPath = namesPathBuilder.Length > 0 ? Path.GetFullPath(namesPathBuilder.ToString()) : null;
         }
 
         static List<string[]> ParseNames(string namesPath)
