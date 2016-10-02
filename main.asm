@@ -7,6 +7,8 @@ section "Main", ROM0
 Start::
 	DI ; disable interrupts until we set a few things up
 
+	call EnableSprites
+	
 	; Set stack to top of internal RAM
 	ld SP, StackTop
 
@@ -63,7 +65,10 @@ Draw::
 	push BC
 	push DE
 	push HL
+	
 	call CopyWorkingVars; this part is vblank-sensitive
+	
+	
 	pop HL
 	pop DE
 	pop BC
@@ -72,4 +77,5 @@ Draw::
 
 
 Update::
+	call UpdateFireman
 	ret
