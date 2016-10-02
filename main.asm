@@ -10,5 +10,6 @@ Start::
 	ld SP, StackTop
 
 	call LoadTestLevel
+	call RenderBlocks
 
 	jp HaltForever
