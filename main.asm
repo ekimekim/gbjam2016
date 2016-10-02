@@ -10,8 +10,9 @@ Start::
 	; Set stack to top of internal RAM
 	ld SP, StackTop
 
-	; Wait for first vblank
+	; Wait for next vblank
 	ld HL, InterruptFlags
+	ld [HL], $0 ; reset flags
 .waitForVBlank
 	bit 0, [HL] ; set zero if bit 0 of [HL] is not set
 	jr z, .waitForVBlank
