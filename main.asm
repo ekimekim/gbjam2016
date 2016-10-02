@@ -26,6 +26,13 @@ Start::
 	; Initialize game state
 	call LoadTestLevel
 
+	; Which interrupts we want: Only VBlank
+	ld a, %00000001
+	ld [InterruptsEnabled], a
+
+	xor a
+	ld [InterruptFlags], a ; Cancel pending VBlank so interrupt doesn't fire immediately
+
 	; ok, we're good to go
 	EI
 
