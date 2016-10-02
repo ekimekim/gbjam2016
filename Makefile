@@ -21,6 +21,6 @@ clean:
 	rm *.o *.sym game.gb
 
 assets:
-	pngtoasm -o include/assets.asm -dir assets -paint 
+	pngtoasm -o include/assets.asm -src assets -debug red -ignore red -names assets\TileNames.csv
 
 all: game.gb

@@ -1,531 +1,350 @@
-;\LeftTree.png
-word '11111111
-word '12211111
-word '12211111
-word '12211111
-word '12211111
-word '12222211
-word '12222211
-word '10111111
-;\MockupMini.png/0,0
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-;\MockupMini.png/1,0
-word '11111111
-word '11111111
-word '11111111
-word '11111112
-word '11111112
-word '11111112
-word '11111110
-word '11111110
-;\MockupMini.png/2,0
-word '11111111
-word '11111111
-word '11111111
-word '11111121
-word '11111123
-word '11111122
-word '11111102
-word '11111101
-;\MockupMini.png/3,0
-word '11111111
-word '11111111
-word '11111111
-word '11111212
-word '11111232
-word '11111222
-word '11111021
-word '11111011
-;\MockupMini.png/4,0
-word '11111111
-word '11111111
-word '11111111
-word '11112121
-word '11112321
-word '11112221
-word '11110211
-word '11110111
-;\MockupMini.png/5,0
-word '11111111
-word '11111111
-word '11111111
-word '11121211
-word '11123212
-word '11122211
-word '11102111
-word '11101111
-;\MockupMini.png/0,1
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-;\MockupMini.png/1,1
-word '11111111
-word '11111111
-word '11111112
-word '11111112
-word '11111112
-word '11111110
-word '11111110
-word '11111110
-;\MockupMini.png/2,1
-word '11111111
-word '11111111
-word '11111121
-word '11111123
-word '11111122
-word '11111102
-word '11111101
-word '11111101
-;\MockupMini.png/3,1
-word '11111111
-word '11111111
-word '11111212
-word '11111232
-word '11111222
-word '11111021
-word '11111011
-word '11111011
-;\MockupMini.png/4,1
-word '11111111
-word '11111111
-word '11112121
-word '11112321
-word '11112221
-word '11110211
-word '11110111
-word '11110111
-;\MockupMini.png/5,1
-word '11111111
-word '11111111
-word '11121211
-word '11123212
-word '11122211
-word '11102111
-word '11101111
-word '11101111
-;\MockupMini.png/0,2
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-word '11121211
-;\MockupMini.png/1,2
-word '11111111
-word '11111112
-word '11111112
-word '11111112
-word '11111110
-word '11111110
-word '11111110
-word '11212111
-;\MockupMini.png/2,2
-word '11111111
-word '11111121
-word '11111123
-word '11111122
-word '11111102
-word '11111101
-word '11111101
-word '12121111
-;\MockupMini.png/3,2
-word '11111111
-word '11111212
-word '11111232
-word '11111222
-word '11111021
-word '11111011
-word '11111011
-word '21211111
-;\MockupMini.png/4,2
-word '11111111
-word '11112121
-word '11112321
-word '11112221
-word '11110211
-word '11110111
-word '11110111
-word '12111111
-;\MockupMini.png/5,2
-word '11111111
-word '11121211
-word '11123212
-word '11122211
-word '11102111
-word '11101111
-word '11101111
-word '21111112
-;\MockupMini.png/0,3
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-word '11121211
-word '11123212
-;\MockupMini.png/1,3
-word '11111112
-word '11111112
-word '11111112
-word '11111110
-word '11111110
-word '11111110
-word '11212111
-word '11232122
-;\MockupMini.png/2,3
-word '11111121
-word '11111123
-word '11111122
-word '11111102
-word '11111101
-word '11111101
-word '12121111
-word '12321221
-;\MockupMini.png/3,3
-word '11111212
-word '11111232
-word '11111222
-word '11111021
-word '11111011
-word '11111011
-word '21211111
-word '23212211
-;\MockupMini.png/4,3
-word '11112121
-word '11112321
-word '11112221
-word '11110211
-word '11110111
-word '11110111
-word '12111111
-word '32122111
-;\MockupMini.png/5,3
-word '11121211
-word '11123212
-word '11122211
-word '11102111
-word '11101111
-word '11101111
-word '21111112
-word '21221112
-;\MockupMini.png/0,4
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-word '11121211
-word '11123212
-word '11122211
-;\MockupMini.png/1,4
-word '11111112
-word '11111112
-word '11111110
-word '11111110
-word '11111110
-word '11212111
-word '11232122
-word '11222113
-;\MockupMini.png/2,4
-word '11111123
-word '11111122
-word '11111102
-word '11111101
-word '11111101
-word '12121111
-word '12321221
-word '12221132
-;\MockupMini.png/3,4
-word '11111232
-word '11111222
-word '11111021
-word '11111011
-word '11111011
-word '21211111
-word '23212211
-word '22211321
-;\MockupMini.png/4,4
-word '11112321
-word '11112221
-word '11110211
-word '11110111
-word '11110111
-word '12111111
-word '32122111
-word '22113212
-;\MockupMini.png/5,4
-word '11123212
-word '11122211
-word '11102111
-word '11101111
-word '11101111
-word '21111112
-word '21221112
-word '21132122
-;\MockupMini.png/0,5
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-word '11121211
-word '11123212
-word '11122211
-word '11102111
-;\MockupMini.png/1,5
-word '11111112
-word '11111110
-word '11111110
-word '11111110
-word '11212111
-word '11232122
-word '11222113
-word '11021112
-;\MockupMini.png/2,5
-word '11111122
-word '11111102
-word '11111101
-word '11111101
-word '12121111
-word '12321221
-word '12221132
-word '10211122
-;\MockupMini.png/3,5
-word '11111222
-word '11111021
-word '11111011
-word '11111011
-word '21211111
-word '23212211
-word '22211321
-word '02111221
-;\MockupMini.png/4,5
-word '11112221
-word '11110211
-word '11110111
-word '11110111
-word '12111111
-word '32122111
-word '22113212
-word '21112212
-;\MockupMini.png/5,5
-word '11122211
-word '11102111
-word '11101111
-word '11101111
-word '21111112
-word '21221112
-word '21132122
-word '11122122
-;\MockupMini.png/0,6
-word '11111111
-word '11111111
-word '11111111
-word '11121211
-word '11123212
-word '11122211
-word '11102111
-word '11101111
-;\MockupMini.png/1,6
-word '11111110
-word '11111110
-word '11111110
-word '11212111
-word '11232122
-word '11222113
-word '11021112
-word '11011112
-;\MockupMini.png/2,6
-word '11111102
-word '11111101
-word '11111101
-word '12121111
-word '12321221
-word '12221132
-word '10211122
-word '10111120
-;\MockupMini.png/3,6
-word '11111021
-word '11111011
-word '11111011
-word '21211111
-word '23212211
-word '22211321
-word '02111221
-word '01111201
-;\MockupMini.png/4,6
-word '11110211
-word '11110111
-word '11110111
-word '12111111
-word '32122111
-word '22113212
-word '21112212
-word '11112011
-;\MockupMini.png/5,6
-word '11102111
-word '11101111
-word '11101111
-word '21111112
-word '21221112
-word '21132122
-word '11122122
-word '11120111
-;\MockupMini.png/0,7
-word '11111111
-word '11111111
-word '11121211
-word '11123212
-word '11122211
-word '11102111
-word '11101111
-word '11101111
-;\MockupMini.png/1,7
-word '11111110
-word '11111110
-word '11212111
-word '11232122
-word '11222113
-word '11021112
-word '11011112
-word '11011111
-;\MockupMini.png/2,7
-word '11111101
-word '11111101
-word '12121111
-word '12321221
-word '12221132
-word '10211122
-word '10111120
-word '10111110
-;\MockupMini.png/3,7
-word '11111011
-word '11111011
-word '21211111
-word '23212211
-word '22211321
-word '02111221
-word '01111201
-word '01111101
-;\MockupMini.png/4,7
-word '11110111
-word '11110111
-word '12111111
-word '32122111
-word '22113212
-word '21112212
-word '11112011
-word '11111011
-;\MockupMini.png/5,7
-word '11101111
-word '11101111
-word '21111112
-word '21221112
-word '21132122
-word '11122122
-word '11120111
-word '11110111
-;\MockupMini.png/0,8
-word '11111111
-word '11121211
-word '11123212
-word '11122211
-word '11102111
-word '11101111
-word '11101111
-word '11111111
-;\MockupMini.png/1,8
-word '11111110
-word '11212111
-word '11232122
-word '11222113
-word '11021112
-word '11011112
-word '11011111
-word '11111111
-;\MockupMini.png/2,8
-word '11111101
-word '12121111
-word '12321221
-word '12221132
-word '10211122
-word '10111120
-word '10111110
-word '11111111
-;\MockupMini.png/3,8
-word '11111011
-word '21211111
-word '23212211
-word '22211321
-word '02111221
-word '01111201
-word '01111101
-word '11111111
-;\MockupMini.png/4,8
-word '11110111
-word '12111111
-word '32122111
-word '22113212
-word '21112212
-word '11112011
-word '11111011
-word '11111111
-;\MockupMini.png/5,8
-word '11101111
-word '21111112
-word '21221112
-word '21132122
-word '11122122
-word '11120111
-word '11110111
-word '11111111
-;\PlayerSprite.png/0,0
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-word '10111111
-word '01111111
-;\PlayerSprite.png/1,0
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-word '01111110
-word '11111110
-;\PlayerSprite.png/2,0
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-word '11111111
-word '11111101
-word '11111101
-;\RightTree.png
-word '11111111
-word '11222211
-word '11211121
-word '11211121
-word '11222211
-word '11211121
-word '11211101
-word '11111111
+;/Tiles.png/high fire
+dw `11313131
+dw `13131331
+dw `13333331
+dw `33333333
+dw `33333333
+dw `33333333
+dw `33333333
+dw `11111111
+
+;/Tiles.png/1,0
+; (ignored)
+
+;/Tiles.png/2,0
+; (ignored)
+
+;/Tiles.png/3,0
+; (ignored)
+
+;/Tiles.png/4,0
+; (ignored)
+
+;/Tiles.png/5,0
+; (ignored)
+
+;/Tiles.png/6,0
+; (ignored)
+
+;/Tiles.png/medium fire grass
+dw `11111111
+dw `11111111
+dw `33333333
+dw `33333333
+dw `33333333
+dw `33333333
+dw `33333333
+dw `21212121
+
+;/Tiles.png/medium fire tree
+dw `11111111
+dw `11111111
+dw `33333333
+dw `33303333
+dw `33303333
+dw `33303333
+dw `33303333
+dw `11101111
+
+;/Tiles.png/medium fire building 
+dw `11111111
+dw `11011111
+dw `30300333
+dw `03303033
+dw `03033303
+dw `03033303
+dw `30033303
+dw `11000001
+
+;/Tiles.png/3,1
+; (ignored)
+
+;/Tiles.png/4,1
+; (ignored)
+
+;/Tiles.png/5,1
+; (ignored)
+
+;/Tiles.png/6,1
+; (ignored)
+
+;/Tiles.png/low fire grass 1
+dw `11111111
+dw `11111111
+dw `11111111
+dw `11111111
+dw `11111111
+dw `33333333
+dw `33333333
+dw `21212121
+
+;/Tiles.png/low fire tree 1
+dw `11111111
+dw `11111111
+dw `11222111
+dw `11202111
+dw `11202111
+dw `33103333
+dw `33103333
+dw `11101111
+
+;/Tiles.png/low fire building
+dw `11111111
+dw `11011111
+dw `10200111
+dw `03202011
+dw `03022201
+dw `03033303
+dw `30033303
+dw `11000001
+
+;/Tiles.png/low fire grass 2
+dw `11111111
+dw `11111111
+dw `11111111
+dw `11111111
+dw `11111111
+dw `33333333
+dw `33333333
+dw `22222222
+
+;/Tiles.png/low fire tree 2
+dw `11111111
+dw `11111111
+dw `12222221
+dw `12022021
+dw `12022021
+dw `33033033
+dw `33033033
+dw `11011011
+
+;/Tiles.png/low fire tree 3
+dw `11111111
+dw `11111111
+dw `22222221
+dw `20202021
+dw `20202021
+dw `30303033
+dw `30303033
+dw `10101011
+
+;/Tiles.png/low fire tree 4
+dw `11111111
+dw `11111111
+dw `22222222
+dw `20222022
+dw `20222022
+dw `30303030
+dw `30303030
+dw `10101010
+
+;/Tiles.png/burnt grass 1
+dw `11111111
+dw `11111111
+dw `11111111
+dw `11111111
+dw `11111111
+dw `11111111
+dw `11111111
+dw `01010101
+
+;/Tiles.png/burnt tree 1
+dw `11111111
+dw `11111111
+dw `11111111
+dw `11101111
+dw `11101111
+dw `11101111
+dw `11101111
+dw `11101111
+
+;/Tiles.png/burnt building
+dw `11111111
+dw `11111111
+dw `11111111
+dw `11101111
+dw `01101111
+dw `01100101
+dw `10011001
+dw `11000001
+
+;/Tiles.png/burnt grass 2
+dw `11111111
+dw `11111111
+dw `11111111
+dw `11111111
+dw `11111111
+dw `11111111
+dw `11111111
+dw `00000000
+
+;/Tiles.png/burnt tree 2
+dw `11111111
+dw `11111111
+dw `11111111
+dw `11011011
+dw `11011011
+dw `11011011
+dw `11011011
+dw `11011011
+
+;/Tiles.png/burnt tree 3
+dw `11111111
+dw `11111111
+dw `11111111
+dw `10101011
+dw `10101011
+dw `10101011
+dw `10101011
+dw `10101011
+
+;/Tiles.png/burnt tree 4
+dw `11111111
+dw `11111111
+dw `11111111
+dw `10111011
+dw `10111011
+dw `10101010
+dw `10101010
+dw `10101010
+
+;/Tiles.png/normal grass 1
+dw `11111111
+dw `11111111
+dw `11111111
+dw `11111111
+dw `11111111
+dw `11111111
+dw `21212121
+dw `21212121
+
+;/Tiles.png/normal tree 1
+dw `11111111
+dw `11111111
+dw `11222111
+dw `11202111
+dw `11202111
+dw `11101111
+dw `11101111
+dw `11101111
+
+;/Tiles.png/normal building
+dw `11111111
+dw `11011111
+dw `10200111
+dw `02202011
+dw `02022201
+dw `02022201
+dw `10022201
+dw `11000001
+
+;/Tiles.png/normal grass 2
+dw `11111111
+dw `11111111
+dw `11111111
+dw `11111111
+dw `11111111
+dw `11111111
+dw `21212121
+dw `22222222
+
+;/Tiles.png/normal tree 2
+dw `11111111
+dw `11111111
+dw `11111111
+dw `11011011
+dw `11011011
+dw `11011011
+dw `11011011
+dw `11011011
+
+;/Tiles.png/normal tree 3
+dw `11111111
+dw `11111111
+dw `11111111
+dw `10101011
+dw `10101011
+dw `10101011
+dw `10101011
+dw `10101011
+
+;/Tiles.png/normal tree 4
+dw `11111111
+dw `11111111
+dw `11111111
+dw `10111011
+dw `10101010
+dw `10101010
+dw `10101010
+dw `10101010
+
+;/Tiles.png/lush grass 1
+dw `11111111
+dw `11111111
+dw `11111111
+dw `11111111
+dw `11111111
+dw `21212121
+dw `21212121
+dw `21212121
+
+;/Tiles.png/lush tree 1
+dw `11111111
+dw `11111111
+dw `11222111
+dw `11202111
+dw `11202111
+dw `11101111
+dw `11101111
+dw `11101111
+
+;/Tiles.png/lush building
+dw `00001111
+dw `02220111
+dw `02000001
+dw `02022201
+dw `02022201
+dw `02022201
+dw `10022201
+dw `11000001
+
+;/Tiles.png/lush grass 2
+dw `11111111
+dw `11111111
+dw `11111111
+dw `11111111
+dw `11111111
+dw `21212121
+dw `21212121
+dw `22222222
+
+;/Tiles.png/lush tree 2
+dw `11111111
+dw `11111111
+dw `11111111
+dw `11011011
+dw `11011011
+dw `11011011
+dw `11011011
+dw `11011011
+
+;/Tiles.png/lush tree 3
+dw `11111111
+dw `11111111
+dw `11111111
+dw `10101011
+dw `10101011
+dw `10101011
+dw `10101011
+dw `10101011
+
+;/Tiles.png/lush tree 4
+dw `11111111
+dw `11111111
+dw `11111111
+dw `10111011
+dw `10101010
+dw `10101010
+dw `10101010
+dw `10101010
+
