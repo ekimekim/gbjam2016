@@ -13,10 +13,10 @@ INCLUDE "tiledefs.asm"
 ;   2-3: Variant (used for tile selection)
 
 section "Level data", WRAM0
-; Level is array of 32x32 blocks, each block is 3 bytes
-; Total of 1024 blocks = 3072 bytes = $c00 bytes
+; Level is array of 20x18 blocks, each block is 3 bytes
+; Total of 360 blocks = 1080 bytes = $c00 bytes
 Level::
-	ds $c00
+	ds 20*18*3
 
 ; note on tile layout:
 ; TileHighFire: HighFire
