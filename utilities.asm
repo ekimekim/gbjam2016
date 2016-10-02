@@ -1,20 +1,14 @@
 include "ioregs.asm"
 Section "Utilities", ROM0
 
-SpritesFlag EQU %00000010
+SpritesBit EQU 1
 
 EnableSprites::
-	ld A, [LCDControl]
-	ld B, SpritesFlag;
-	or B
-	ld [LCDControl], A
-	
+	ld HL, LCDControl
+	set SpritesBit, [HL]
 	ret
 	
 DisableSprites::
-	ld A, [LCDControl]
-	ld B, SpritesFlag;
-	xor B
-	ld [LCDControl], A
-	
+	ld HL, LCDControl
+	res SpritesBit, [HL]
 	ret

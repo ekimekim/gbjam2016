@@ -7,28 +7,32 @@ section "Main", ROM0
 Start::
 	DI ; disable interrupts until we set a few things up
 
-	call EnableSprites
-	
 	; Set stack to top of internal RAM
 	ld SP, StackTop
 
 	; Initialize HRAM
 	call LoadHRAMData
 
-	; Initialize VRAM
-	call LoadTileData
-	call ClearSpriteData
-
 	; Initialize game state
 	call LoadTestLevel
 	call RenderBlocks
 	call ClearWorkingSprites
+
+	; Disable background while we're fucking with vram
+	ld A, %10000000 ; everything off except display itself
+
+	; Initialize VRAM
+	call LoadTileData
+	call ClearSpriteData
 
 	; Initialize other settings
 	; Set pallettes
 	ld A, %11100100
 	ld [TileGridPalette], A
 	ld [SpritePalette], A
+	; Set up display
+	ld A, %10000011 ; window off, background and sprites on
+	ld [LCDControl], A
 	; Set timer frequency (16kHz freq = 64Hz interrupt)
 	ld A, %00000111 ; enabled, mode 4 (2^14 Hz)
 	ld [TimerControl], A
@@ -49,10 +53,6 @@ Start::
 	ld [TimerCounter], A ; reset timer
 	ld [TimerFired], A ; unset "timer has fired" flag
 	
-	ld A, [TimerCounterSlow] ; iterate slow timer
-	inc A
-	ld [TimerCounterSlow], A
-	
 	call Update
 
 .timerloop
@@ -72,7 +72,6 @@ Draw::
 	
 	call CopyWorkingVars; this part is vblank-sensitive
 	
-	
 	pop HL
 	pop DE
 	pop BC
@@ -81,5 +80,11 @@ Draw::
 
 
 Update::
+	; iterate slow timer
+	ld A, [TimerCounterSlow]
+	inc A
+	ld [TimerCounterSlow], A
+
 	call UpdateFireman
+
 	ret
