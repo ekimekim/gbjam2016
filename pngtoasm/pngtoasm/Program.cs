@@ -106,7 +106,7 @@ namespace pngtoasm
                         }
                         if (ignoreThisTile)
                         {
-                            lines.Add("; (ignored)");
+                            lines.Add("ds 16 ; skipped");
                             lines.Add("");
                             continue;
                         }

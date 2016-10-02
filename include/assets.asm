@@ -9,22 +9,22 @@ dw `00000000
 dw `00000000
 
 ;/Tiles.png/1,0
-; (ignored)
+ds 16
 
 ;/Tiles.png/2,0
-; (ignored)
+ds 16
 
 ;/Tiles.png/3,0
-; (ignored)
+ds 16
 
 ;/Tiles.png/4,0
-; (ignored)
+ds 16
 
 ;/Tiles.png/5,0
-; (ignored)
+ds 16
 
 ;/Tiles.png/6,0
-; (ignored)
+ds 16
 
 ;/Tiles.png/medium fire grass
 dw `22202202
@@ -57,16 +57,16 @@ dw `03300030
 dw `22333332
 
 ;/Tiles.png/3,1
-; (ignored)
+ds 16
 
 ;/Tiles.png/4,1
-; (ignored)
+ds 16
 
 ;/Tiles.png/5,1
-; (ignored)
+ds 16
 
 ;/Tiles.png/6,1
-; (ignored)
+ds 16
 
 ;/Tiles.png/low fire grass 1
 dw `22222222
