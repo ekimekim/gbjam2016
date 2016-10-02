@@ -1,1 +1,0 @@
-SpriteBackground EQU %11111111

@@ -72,7 +72,7 @@ namespace pngtoasm
                                     .Select(p => Color.FromArgb(p.R, p.G, p.G)) //Alpha fix
                                     .Distinct()
                                     .Where(p => !ignoreColor.HasValue || p != ignoreColor.Value)
-                                    .OrderBy(p => p.R + p.G + p.B)
+                                    .OrderByDescending(p => p.R + p.G + p.B)
                                     .ToArray();
 
             if (colorPallet.Count() > 4)
