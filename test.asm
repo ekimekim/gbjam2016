@@ -34,6 +34,10 @@ TestLevel:
 	db $00, $81, $09 ; lush tree 3
 	db $00, $81, $0d ; lush tree 4
 	db $00, $ff, $02 ; lush building
+	REPT (20*18-32)/2
+	db $00, $10, $00 ; grass 1
+	db $00, $10, $04 ; grass 2
+	ENDR
 EndTestLevel::
 TestLevelSize EQU EndTestLevel - TestLevel
 
