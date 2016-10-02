@@ -1,5 +1,6 @@
 
 INCLUDE "macros.asm"
+INCLUDE "vram.asm"
 
 Section "Tile Assets", ROMX, BANK[1]
 

@@ -11,7 +11,7 @@ Start::
 	ld SP, StackTop
 
 	; Wait for first vblank
-	ld HL, InterrputFlags
+	ld HL, InterruptFlags
 .waitForVBlank
 	bit 0, [HL] ; set zero if bit 0 of [HL] is not set
 	jr z, .waitForVBlank
