@@ -39,7 +39,7 @@ Start::
 	ld [SpritePaletteSolid], A
 
 	; Set up display
-	ld A, %10000011 ; window off, background and sprites on
+	ld A, %10010011 ; window off, background and sprites on, use signed tile map
 	ld [LCDControl], A
 	; Set timer frequency (16kHz freq = 64Hz interrupt)
 	ld A, %00000111 ; enabled, mode 4 (2^14 Hz)

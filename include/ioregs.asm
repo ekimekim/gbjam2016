@@ -44,7 +44,7 @@ InterruptFlags EQU $ff0f
 ; 1: Sprite display off/on
 ; 2: Sprite size (width x height): 8x8 if unset, 8x16 if set
 ; 3: Background Tile grid region select: 0 for TileGrid, 1 for AltTileGrid
-; 4: Background and Window tile map mode select: 0 for unsigned, 1 for signed.
+; 4: Background and Window tile map mode select: 0 for signed, 1 for unsigned.
 ;    Note Sprites always use unsigned.
 ; 5: Window display off/on
 ; 6: Window Tile grid region select: 0 for TileGrid, 1 for AltTileGrid
