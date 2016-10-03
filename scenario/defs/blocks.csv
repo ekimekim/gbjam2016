@@ -2,23 +2,23 @@
 // in order: temperature fuelamount tiletype
 
 // high fire
-ff 20 00
+FF 20 00,FF 40 01,FF 80 02
 
 // med fire: grass, tree, house
-80 05 00,80 20 01,80 20 02
+80 15 00,80 40 01,80 80 02
 
 // low fire: grass, tree, house
-40 05 00,40 20 01,40 20 02
+40 15 00,40 40 01,40 80 02
 
 // burnt: grass, tree, house
-00 00 00,00 00 01,00 00 02
+00 05 00,00 05 01,00 05 02
 
 // normal: grass, tree, house
 //(grass has reduced fuel by design)
-00 05 00,00 20 01,00 20 02
+00 15 00,00 40 01,00 80 02
 
 // lush:
 // (grass has reduced fuel by design)
-00 20 00,00 81 01,00 81 02
+00 40 00,00 80 01,00 FF 02
 
 // any line containing // is a comment
