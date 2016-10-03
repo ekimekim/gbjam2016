@@ -31,7 +31,7 @@ Start::
 	ld [TileGridPalette], A
 	ld [SpritePaletteTransparent], A
 	ld [SpritePaletteSolid], A
-	
+
 	; Set up display
 	ld A, %10000011 ; window off, background and sprites on
 	ld [LCDControl], A
@@ -54,7 +54,7 @@ Start::
 	xor A
 	ld [TimerCounter], A ; reset timer
 	ld [TimerFired], A ; unset "timer has fired" flag
-	
+
 	call Update
 
 .timerloop
@@ -71,9 +71,9 @@ Draw::
 	push BC
 	push DE
 	push HL
-	
+
 	call CopyWorkingVars; this part is vblank-sensitive
-	
+
 	pop HL
 	pop DE
 	pop BC
