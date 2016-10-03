@@ -40,9 +40,7 @@ IntLCDC::
 section "Timer Interrupt handler", ROM0 [$50]
 ; A configurable amount of time has passed
 IntTimer::
-	ld A, 1
-	ld [TimerFired], A
-	reti
+	jp TimerHandler
 section "Serial Interrupt handler", ROM0 [$58]
 ; Serial transfer is complete
 IntSerial::
@@ -58,6 +56,14 @@ HaltForever::
 	halt
 	; halt can be recovered from after an interrupt or reset, so halt again
 	jp HaltForever
+
+TimerHandler::
+	ld A, 1
+	ld [TimerFired], A
+	ld HL, TimerCounterSlow
+	add [HL] ; A contained 1; now contains [HL] + 1
+	ld [HL], A
+	reti
 
 section "Header", ROM0 [$100]
 ; This must be nop, then a jump, then blank up to 150

@@ -82,11 +82,6 @@ Draw::
 
 
 Update::
-	; iterate slow timer
-	ld A, [TimerCounterSlow]
-	inc A
-	ld [TimerCounterSlow], A
-
 	call UpdateFireman
 
 	call RunStep
