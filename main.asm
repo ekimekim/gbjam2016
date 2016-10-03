@@ -14,7 +14,7 @@ Start::
 	call LoadHRAMData
 
 	; Initialize game state
-	call LoadTestLevel
+	call LoadScenarioSpiral
 	call RenderBlocks
 	call ClearWorkingSprites
 

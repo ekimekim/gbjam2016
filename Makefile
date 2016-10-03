@@ -25,6 +25,6 @@ assets:
 
 scenarios:
 # use "-defdefault FF FF FF" to define default tile type
-	scenariotoasm -o include/scenarios.asm -defpng scenario/defs/blocks.png -defcsv scenario/defs/blocks.csv -s scenario/scenarios/Spiral.png -defdefault 32 20 00
+	scenariotoasm -o include/scenariosdata.asm -defpng scenario/defs/blocks.png -defcsv scenario/defs/blocks.csv -s scenario/scenarios -defdefault 32 20 00
 	
 all: game.gb
