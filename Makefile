@@ -1,7 +1,7 @@
 
 # avoid implicit rules for clarity
 .SUFFIXES: .asm .o .gb
-.PHONY: run clean assets scenarios
+.PHONY: run clean assets scenarios dontest
 
 ASMS := $(wildcard *.asm)
 OBJS := $(ASMS:.asm=.o)
@@ -25,6 +25,6 @@ assets:
 
 scenarios:
 # use "-defdefault FF FF FF" to define default tile type
-	scenariotoasm -o include/scenarios.asm -defpng scenario/defs/blocks.png -defcsv scenario/defs/blocks.csv -s scenario/scenarios/Spiral.png -defdefault 00 15 00
+	scenariotoasm -o include/scenarios.asm -defpng scenario/defs/blocks.png -defcsv scenario/defs/blocks.csv -s scenario/scenarios/Spiral.png -defdefault 32 15 00
 	
 all: game.gb
