@@ -88,17 +88,10 @@ BlockToTile::
 
 ; for each block in level; write appropriate tile to WorkingGrid
 RenderBlocks::
-	ld BC, $0000
+	ld BC, 20*18
 	ld HL, Level
-.loop
 	ld DE, WorkingGrid
-	; DE = WorkingGrid + BC to get index into tilegrid
-	ld A, WorkingGrid & $ff ; lower byte
-	add C ; possibly set carry
-	ld E, A
-	ld A, (WorkingGrid & $ff00) >> 8 ; higher byte
-	adc B ; A = WorkingGrid upper + B + carry
-	ld D, A
+.loop
 	push BC
 	push DE
 	call BlockToTile ; put result in A and HL += 2
@@ -106,12 +99,11 @@ RenderBlocks::
 	pop BC
 	ld [DE], A ; write to WorkingGrid
 	inc HL
-	inc BC
+	inc DE
+	dec BC
 	xor A ; A = 0
 	cp C
-	jr nz, .loop ; is C == 0?
-	ld A, $04
+	jr nz, .loop
 	cp B
-	jr nz, .loop ; is B == 4
-	; BC = $0400, we're done
+	jr nz, .loop
 	ret
