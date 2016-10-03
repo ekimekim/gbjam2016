@@ -32,7 +32,7 @@ def step():
 				dt[y][x] += min(255, burn_rate * 3)
 
 			# move heat to neighbors
-			transfer = max(1, int(temp * TRANSFER_COEF))
+			transfer = int(temp * TRANSFER_COEF)
 			neighbors = 0
 			for dy, dx in [(-1, 0), (1, 0), (0, -1), (0, 1)]: # no diagonals
 				if (0 <= y + dy < maxY) and (0 <= x + dx < maxX):
@@ -71,9 +71,9 @@ corner_hot_sea_grid[0][0] = (255, 128)
 mid_cool_sea_grid = new_sea_grid()
 mid_cool_sea_grid[9][9] = (64, 128)
 
-grid = mid_cool_sea_grid
+#grid = mid_cool_sea_grid
 #grid = corner_hot_sea_grid
-#grid = path_grid
+grid = path_grid
 
 def display(hide):
 	def color(c, s, hide):
