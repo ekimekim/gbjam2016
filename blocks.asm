@@ -28,7 +28,7 @@ section "Block methods", ROM0
 
 ; Lookup table from type to lush threshold
 LushThresholdTable:
-	db $20, $80, $c0
+	db $30, $60, $a0
 
 ; Determine the tile to render for a given block
 ; Inputs: HL = block address
@@ -57,9 +57,9 @@ BlockToTile::
 .nofire
 	ld D, TileBurnt
 	ld A, B ; load fuel
-	; fuel < 8?
-	and %11111000 ; sets the zero flag if the result is zero, ie. A < 8
-	jr z, .addStyle ; if < 8, it's burnt
+	; fuel < 32?
+	and %11100000 ; sets the zero flag if the result is zero, ie. A < 32
+	jr z, .addStyle ; if < 32, it's burnt
 .notburnt
 	ld DE, LushThresholdTable
 	ld A, C
