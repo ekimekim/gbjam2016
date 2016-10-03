@@ -2,14 +2,22 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace pngtoasm
+namespace wintools.tech
 {
     public static class Extensions
     {
+        public static string GetPath(this Dictionary<string, string> args, string key, bool throwIfMissing)
+        {
+            if (args.ContainsKey(key))
+                return Path.GetFullPath(args[key]);
+
+            if (throwIfMissing)
+                throw new Exception("Missing arg " + key);
+
+            return null;
+        }
+
         public static void WriteLineUnix(this StreamWriter writer, string line)
         {
             writer.Write(line);
@@ -38,17 +46,14 @@ namespace pngtoasm
             }
         }
 
-        public static string ToInt4String(this int src)
+        public static Color GetPixelSolid(this Bitmap bitmap, int x, int y)
         {
-            if (src == 0)
-                return "00";
-            if (src == 1)
-                return "01";
-            if (src == 2)
-                return "10";
-            if (src == 3)
-                return "11";
-            throw new Exception(src + " not supported");
+            return bitmap.GetPixel(x, y).SetAlpha(255);
+        }
+
+        public static Color SetAlpha(this Color color, int a)
+        {
+            return Color.FromArgb(a, color.R, color.G, color.B);
         }
     }
 }

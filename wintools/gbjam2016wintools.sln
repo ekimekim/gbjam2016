@@ -5,6 +5,10 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pngtoasm", "pngtoasm\pngtoasm.csproj", "{48F2E565-F8D8-4C6B-A60E-6D7591CBC7AB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "scenariotoasm", "scenariotoasm\scenariotoasm.csproj", "{D73D079A-8272-4934-BD53-DBF4708CD45B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wintools.tech", "wintools.tech\wintools.tech.csproj", "{187B469A-D541-4153-8935-CB08FABCE8B2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{48F2E565-F8D8-4C6B-A60E-6D7591CBC7AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48F2E565-F8D8-4C6B-A60E-6D7591CBC7AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48F2E565-F8D8-4C6B-A60E-6D7591CBC7AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D73D079A-8272-4934-BD53-DBF4708CD45B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D73D079A-8272-4934-BD53-DBF4708CD45B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D73D079A-8272-4934-BD53-DBF4708CD45B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D73D079A-8272-4934-BD53-DBF4708CD45B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{187B469A-D541-4153-8935-CB08FABCE8B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{187B469A-D541-4153-8935-CB08FABCE8B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{187B469A-D541-4153-8935-CB08FABCE8B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{187B469A-D541-4153-8935-CB08FABCE8B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

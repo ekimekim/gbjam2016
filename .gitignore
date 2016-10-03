@@ -4,3 +4,12 @@ game.gb
 /pngtoasm/.vs
 /pngtoasm/pngtoasm/bin
 /pngtoasm/pngtoasm/obj
+/wintools/.vs
+/wintools/pngtoasm/bin
+/wintools/pngtoasm/obj
+/wintools/scenariotoasm/bin
+/wintools/scenariotoasm/obj
+/wintools/wintools.tech/bin
+/wintools/wintools.tech/obj
+/wintools/scenariotoasm/scenariotoasm.csproj.user
+/wintools/pngtoasm/pngtoasm.csproj.user

@@ -1,0 +1,24 @@
+// hex values for blocks in defs/blocks.png
+// in order: temperature fuelamount tiletype
+
+// high fire
+ff 20 00
+
+// med fire: grass, tree, house
+80 05 00,80 20 01,80 20 02
+
+// low fire: grass, tree, house
+40 05 00,40 20 01,40 20 02
+
+// burnt: grass, tree, house
+00 00 00,00 00 01,00 00 02
+
+// normal: grass, tree, house
+//(grass has reduced fuel by design)
+00 05 00,00 20 01,00 20 02
+
+// lush:
+// (grass has reduced fuel by design)
+00 20 00,00 81 01,00 81 02
+
+// any line containing // is a comment

@@ -4,9 +4,8 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
+using wintools.tech;
 
 namespace pngtoasm
 {
@@ -19,11 +18,10 @@ namespace pngtoasm
                 || args[1].ToLower().Contains("?"))
             {
                 Console.WriteLine("usage pngtoasm [-o output.asm] [-src assetsdir]\n(optional)[-debug color] if more than 4 colors, outputs a *debug.png with least used pixels painted in target color\n(optional)[-ignore color] tiles that are completely this color will be ignored\n[-names tilenames.csv]");
-
                 return 1;
             }
 
-            //try
+            try
             {
                 string outputPath;
                 string srcDir;
@@ -49,11 +47,11 @@ namespace pngtoasm
                 Console.WriteLine(outputPath);
                 return 0;
             }
-            //catch (Exception e)
-            //{
-            //    Console.WriteLine(e);
-            //    return 1;
-            //}
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return 1;
+            }
         }
 
 
