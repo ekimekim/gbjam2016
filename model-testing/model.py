@@ -71,9 +71,9 @@ corner_hot_sea_grid[0][0] = (255, 128)
 mid_cool_sea_grid = new_sea_grid()
 mid_cool_sea_grid[9][9] = (64, 128)
 
-#grid = mid_cool_sea_grid
+grid = mid_cool_sea_grid
 #grid = corner_hot_sea_grid
-grid = path_grid
+#grid = path_grid
 
 def display(hide):
 	def color(c, s, hide):
@@ -87,9 +87,11 @@ def display(hide):
 		}.get(temp/64, '5')
 		if tempcolor:
 			return tempcolor
-		if fuel < 32:
+		if fuel < 16:
 			return '0' # black
-		if fuel < 96:
+		if fuel < 32:
+			return '0;1'; # grey
+		if fuel < 64:
 			return '2' # green
 		return '2;1' # bold green
 		
@@ -103,7 +105,15 @@ def display(hide):
 	print lines
 
 
-def main(interval=0., hide=False):
+def main(interval=0., hide=False, scenario=None):
+	if scenario:
+		import csv
+		global grid
+		grid = [
+			[
+				(int(cell.split()[0], 16), int(cell.split()[1], 16))
+			for cell in row]
+		for row in csv.reader(open(scenario))]
 	display(hide=hide)
 	while True:
 		if interval:
