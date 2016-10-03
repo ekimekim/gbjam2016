@@ -15,7 +15,7 @@ FF 20 00,FF 40 01,FF 80 02
 
 // normal: grass, tree, house
 //(grass has reduced fuel by design)
-00 15 00,00 40 01,00 80 02
+00 20 00,00 40 01,00 80 02
 
 // lush:
 // (grass has reduced fuel by design)
