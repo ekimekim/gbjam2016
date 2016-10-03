@@ -21,13 +21,15 @@ def step():
 
 			# burn
 			if temp >= 64:
-				burn_rate = int(temp * (fuel + 16) * BURN_COEF)
+				# this is a weird way involving integer rounding of calculating temp * (fuel + 16) / 3072
+				br_partial = temp * (fuel + 16) / 256
+				burn_rate = ((br_partial/4) + br_partial * 21 + 127) / 256
 				# do we have enough to burn?
 				if burn_rate > fuel:
 					burn_rate = fuel
 				# apply
 				grid[y][x] = (temp, fuel - burn_rate)
-				dt[y][x] += burn_rate * BURN_TO_TEMP_COEF
+				dt[y][x] += min(255, burn_rate * 3)
 
 			# move heat to neighbors
 			transfer = max(1, int(temp * TRANSFER_COEF))
@@ -56,7 +58,7 @@ path_grid = [
 
 	[(32, 0), (32, 0), (32, 32), (32, 0), (32, 0), (32, 0), (32, 196), (32, 0)],
 	[(32, 0), (32, 16), (32, 16), (32, 16), (32, 0), (32, 0), (32, 255), (32, 0)],
-	[(32, 0), (32, 16), (32, 16), (32, 32), (32, 32), (32, 32), (32, 32), (32, 0)],
+	[(32, 0), (32, 16), (32, 16), (32, 255), (32, 32), (32, 32), (32, 32), (32, 0)],
 	[(32, 0), (32, 16), (32, 16), (32, 16), (32, 0), (32, 0), (32, 0), (32, 0)],
 ]
 
