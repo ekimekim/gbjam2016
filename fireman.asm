@@ -11,18 +11,21 @@ section "Fireman", ROM0
 ;C position dirty
 UpdateFireman::
 
+	;load joy state
 	call LoadDPad
-
-	ld C, 0
-
-	;load joy data
 	ld A, [JoyIO]
 	ld E, A
 
 	;;HACK DOWN AND RIGHT ARE PRESSED
 	;;x3, Down, Up, Left, Right
 	;ld E, %0001010
+	;;HACK - PRESS DOWN RIGHT
+	;;ld E, %0110000
+	
 
+	; is pos dity = false
+	ld C, 0
+	
 	;--- START Y ---
 	ld HL, WorkingSprites
 	ld A, [HL]
@@ -106,12 +109,68 @@ UpdateFireman::
 	inc HL
 	ld [HL], 0 ;use transparent palette
 
+	;--- load buttons state ---
+	call LoadButtons
+	ld A, [JoyIO]
+	ld E, A
+
+	;;HACK - PRESS A
+	;;ld E, %0111010
+	
+	; flame amount
+	ld C, 0
+	
+	;--- PRESS A ---
+	bit 0, E
+	jp nz, .pressAFinish ; skip to end
+
+	inc C ; Dirty position
+.pressAFinish
+	
+	;--- PRESS B ---
+	bit 1, E
+	jp nz, .pressBFinish ; skip to end
+
+	dec C ; Dirty position
+.pressBFinish
+	
+	
+	;--- SET BLOCKS ON FIRE ---
+	ld HL, Level
+	ld B, 10
+.forEachTile
+	ld A, [HL]
+	add C
+	ld [HL], A
+	
+	inc HL
+	inc HL
+	inc HL
+	
+	dec B
+	jp nz, .forEachTile
+	
+	
 	ret
 
+;----------------------------	
 LoadDPad::
 
 	ld HL, JoyIO
 	ld [HL], JoySelectDPad
+
+	ld b, 16
+.waitStart
+	dec b
+	jp nz, .waitStart
+
+	ret
+
+;----------------------------	
+LoadButtons::
+
+	ld HL, JoyIO
+	ld [HL], JoySelectButtons
 
 	ld b, 16
 .waitStart
