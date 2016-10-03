@@ -90,7 +90,12 @@ Draw::
 Update::
 	call UpdateFireman
 
+	; run simulation step at 8Hz (slow counter updates at 64hz, so we look for the 3 lowest bits = 0)
+	ld A, [TimerCounterSlow]
+	and %00000111
+	jr nz, .skipRunStep
 	call RunStep
 	call RenderBlocks
+.skipRunStep
 
 	ret
