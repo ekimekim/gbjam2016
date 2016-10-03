@@ -104,7 +104,7 @@ UpdateFireman::
 
 	;--- SET SPRITE FLAGS ---
 	inc HL
-	ld [HL], 0
+	ld [HL], 0 ;use transparent palette
 
 	ret
 

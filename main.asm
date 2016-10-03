@@ -29,7 +29,9 @@ Start::
 	; Set pallettes
 	ld A, %11100100
 	ld [TileGridPalette], A
-	ld [SpritePalette], A
+	ld [SpritePaletteTransparent], A
+	ld [SpritePaletteSolid], A
+	
 	; Set up display
 	ld A, %10000011 ; window off, background and sprites on
 	ld [LCDControl], A
@@ -87,7 +89,7 @@ Update::
 
 	call UpdateFireman
 
-	call RunStep
-	call RenderBlocks
+	;call RunStep
+	;call RenderBlocks
 
 	ret
