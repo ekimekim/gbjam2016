@@ -35,7 +35,8 @@ TestLevel:
 	db $00, $81, $0d ; lush tree 4
 	db $00, $ff, $02 ; lush building
 	db $60, $60, $01 ; normal tree on low fire
-	REPT (20*18-33)/2
+	db $60, $1f, $00 ; lush grass on low fire
+	REPT (20*18-34)/2
 	db $00, $10, $00 ; grass 1
 	db $00, $10, $04 ; grass 2
 	ENDR
