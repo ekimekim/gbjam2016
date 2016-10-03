@@ -80,6 +80,10 @@ RunStepOneBlock:
 	swap a
 	; add temp
 	add B
+	; if overflow, cap at 255
+	jr nc, .nooverflow
+	ld A, $ff
+.nooverflow
 	ld B, A ; put it in B for safekeeping
 
 	; get new temp addr
@@ -107,18 +111,37 @@ ClearNewTemps:
 ; Run a step of the simulation
 RunStep::
 	call ClearNewTemps
+
+	; call RunStepOneBlock for each index
 	ld DE, 20*18 - 1
-.loop
+.steploop
 	push DE ; save it since RunStepOneBlock will clobber everything
 	call RunStepOneBlock
 	pop DE
 	dec DE
 	xor A
 	cp E
-	jr nz, .loop
+	jr nz, .steploop
 	cp D
-	jr nz, .loop
+	jr nz, .steploop
 	call RunStepOneBlock ; one last call with index 0
 
-	; TODO update blocks with newtemps
+	; now update temperatures according to NewTemps
+	ld BC, 20*18
+	ld HL, NewTemps
+	ld DE, Level
+.updateloop
+	ld A, [HL+]
+	ld [DE], A
+	; DE += 3 - 3 incs is faster than a 16-bit add
+	REPT 3
+	inc DE
+	ENDR
+	dec BC
+	xor A
+	cp C
+	jr nz, .updateloop
+	cp B
+	jr nz, .updateloop
+
 	ret
