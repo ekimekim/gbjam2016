@@ -19,11 +19,17 @@ Start::
 	call ClearWorkingSprites
 
 	; Disable background while we're fucking with vram
-	ld A, %10000000 ; everything off except display itself
+	xor A
+	ld [LCDControl], A
 
 	; Initialize VRAM
 	call LoadTileData
 	call ClearSpriteData
+	; We have to call vblank update routine 3 times since it only does a third each time
+	; (since under normal circumstances it has to fit in VBlank)
+	call CopyWorkingVars
+	call CopyWorkingVars
+	call CopyWorkingVars
 
 	; Initialize other settings
 	; Set pallettes

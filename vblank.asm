@@ -31,7 +31,7 @@ ClearWorkingSprites::
 	jr nz, .loop
 	ret
 
-; We draw a quarter of the Working Grid at a time, that's all we have time for
+; We draw a third of the Working Grid at a time, that's all we have time for
 ; We track the current quarter in WorkingGridPartNumber
 ; We copy the full WorkingSprites every time
 CopyWorkingVars::
