@@ -49,10 +49,11 @@ scenariotoasm [-o output.csv] [-defpng blockdefs.png] [-defcsv blockdefs.csv][-s
                 switch (outputExtension)
                 {
                     case ".asm":
-                        WriteScenarioAsm(writer, scenario, scenarioVals);
+                        WriteScenarToAsm(writer, scenario, scenarioVals);
                         break;
                     case ".csv":
-                        throw new NotImplementedException("csv is on my todo list");
+                        WriteScenarToCsv(writer, scenario, scenarioVals);
+                        break;
                     default:
                         throw new NotImplementedException(outputExtension + " not supported");
                 }
@@ -75,7 +76,18 @@ scenariotoasm [-o output.csv] [-defpng blockdefs.png] [-defcsv blockdefs.csv][-s
                 throw new Exception("scenario " + scenarioPath + " not found!");
         }
 
-        static void WriteScenarioAsm(StreamWriter writer, string scenarioPath, string[,] scenarioVals)
+        static void WriteScenarToCsv(StreamWriter writer, string scenarioPath, string[,] scenarioVals)
+        {
+            for (int yBlock = 0; yBlock < Scenario.Height; yBlock++)
+            {
+                var row = new string[Scenario.Width];
+                for (int xBlock = 0; xBlock < Scenario.Width; xBlock++)
+                    row[xBlock] = scenarioVals[xBlock, yBlock];
+                writer.WriteLineUnix(string.Join(",", row));
+            }
+        }
+
+        static void WriteScenarToAsm(StreamWriter writer, string scenarioPath, string[,] scenarioVals)
         {
             var scenarioName = Path.GetFileNameWithoutExtension(scenarioPath);
 
