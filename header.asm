@@ -58,11 +58,15 @@ HaltForever::
 	jp HaltForever
 
 TimerHandler::
+	push AF
+	push HL
 	ld A, 1
 	ld [TimerFired], A
 	ld HL, TimerCounterSlow
 	add [HL] ; A contained 1; now contains [HL] + 1
 	ld [HL], A
+	pop HL
+	pop AF
 	reti
 
 section "Header", ROM0 [$100]

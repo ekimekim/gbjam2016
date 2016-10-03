@@ -90,7 +90,7 @@ Draw::
 Update::
 	call UpdateFireman
 
-	call RunStep
+;	call RunStep
 	call RenderBlocks
 
 	ret
