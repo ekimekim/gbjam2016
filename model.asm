@@ -57,6 +57,34 @@ Multiply:
 	LongAdd H,L, D,E, H,L
 	ret
 
+; local macro for Modulo5
+_Modulo5Part: MACRO
+	sub \1
+	jr nc, .noUnderflow\@
+	add \1 ; A < \1, revert the subtract
+.noUnderflow\@
+	ENDM
+
+; A = A mod 5
+; NOTE: This function assumes A < 90, since 360/4 = 90 so this is the max value assuming you're
+; dividing a block index by 20.
+Modulo5:
+	; our strategy here is to do A = A - X if A > X for a list of Xs which are multiples of 5,
+	; until the result is < 5. By picking X >= max(A)/2, we ensure the result A < X.
+	; For example, when max(A) is 45, picking 25 gives us either A was already < 25, or 25 <= A < 45
+	; so afterwards 0 <= A < 20, so between the two options we conclude A < 25.
+	; This is, essentially, a binary search.
+	_Modulo5Part 45 ; A < 45
+	_Modulo5Part 25 ; A < 25
+	; towards the end, we're basically just scanning linearly. But meh.
+	_Modulo5Part 15 ; A < 15
+	_Modulo5Part 10 ; A < 10
+	; special final case to shave an instruction
+	sub 5
+	ret nc ; A was 5 <= A < 10, so now 0 <= A < 5 and we're done
+	add 5 ; A was 0 <= A < 5, so restore it and we're done
+	ret
+
 
 ; Run simulation step for block with index DE
 ; Here is the algorithm for each block as currently coded:
@@ -163,25 +191,149 @@ RunStepOneBlock:
 	ld A, $ff
 .noMaxTemp
 
-	; let's save final temp as B for this next bit
-	ld B, A
+	; we don't need fuel anymore, let's put new temp so far into C
+	ld C, A
+	jp .afterburn
 
 .noburn
+	ld C, B ; temp so far = old temp
+.afterburn
+
+	; calculate how much heat transfer as temperature / 32
+	REPT 5
+	srl B
+	ENDR
+
+	; get it working now, fast later!
+
+	pop DE
+	push BC ; save transfer and new temp so far
+	push DE ; restore and re-save block index
+
+	ld C, 4 ; we'll use this flag to count our neighbors
+
+	; upper neighbor
+	ld A, D
+	and A
+	jr nz, .upperNeighbor
+	ld A, E
+	cp 20 ; if we borrow (carry), DE < 20 and so we're in the first row
+	jr c, .noUpperNeighbor
+.upperNeighbor
+	LongSub D,E, 0,20, D,E
+	call TransferNeighbor
+	dec C
+
+.noUpperNeighbor
+	pop DE
+	push DE ; restore and re-save block index
+
+	LongAdd D,E, 0,20, D,E
+	ld A, D
+	cp $01
+	jr nz, .lowerNeighbor ; if D != 1, we definitely have a lower neighbor
+	ld A, E
+	cp $68
+	jr nc, .noLowerNeighbor ; if D == 1 and E >= $68, we're off the end, no lower neighbor
+.lowerNeighbor
+	call TransferNeighbor
+	dec C
+
+.noLowerNeighbor
+
+	; Check for side neighbors by checking if index % 20 == 0 or 19
+	; We start by looking at index % 4. If 1 or 2, we're done (index % 20 can't be 0 or 19).
+	; Else, we move on to calculating index/4 % 5. If index % 4 == 0 and index/4 % 5 == 0, index % 20 == 0.
+	; If index % 4 == 3 and index/4 % 5 == 4, index % 20 == 19.
+
+	pop DE
+	push DE ; restore and re-save block index
+
+	; mod 4 is very easy - take the last two bits
+	ld A, E
+	and %00000011
+	jr z, .checkMod5Zero ; note that A = 0, so we're looking to compare (index/4)%5 to 0 at .checkMod5Zero
+	cp $03
+	jr nz, .hasBothSideNeighbors
+.checkMod5Four
+	ld A, $04 ; we're looking to compare (index/4)%5 to 4
+.checkMod5Zero
+	; divide index by 4
+	LongShiftR D,E
+	srl E ; since max index is $167, (max index)/2 = $b3, which fits in 8 bits, so D must be 0.
+	ld D, A ; save target modulo in D
+	ld A, E
+	call Modulo5 ; A = (index/4) % 5
+	cp D ; compare (index/4) % 5 to target, set Z if equal
+	jr nz, .hasBothSideNeighbors
+	and A ; set Z if A = 0. This means A = 0 and D = 0 (or else we would've jumped above) and we have no left neighbor
+	jr z, .hasRightNeighborOnly
+	; otherwise this means A = 4 and D = 4, so we have no right neighbor
+
+.hasLeftNeighborOnly
+	pop DE
+	push DE ; restore and re-save block index
+	dec DE ; left neighbor = index - 1
+	call TransferNeighbor
+	dec C
+	inc DE ; make sure block index is set correctly again
+	jp .afterNeighbors
+
+.hasBothSideNeighbors
+	pop DE
+	push DE ; restore and re-save block index
+	dec DE ; left neighbor = index - 1
+	call TransferNeighbor
+	dec C
+
+.hasRightNeighborOnly
+	; DE might not be set yet, so we have to do this again
+	pop DE
+	push DE ; restore and re-save block index
+	inc DE ; right neighbor = index + 1
+	call TransferNeighbor
+	dec C
+	dec DE ; make sure block index is set correctly again
+
+.afterNeighbors
+	; all code paths above lead to DE = block index here.
+	; TODO upto check side neighbors, check value of C, subtract temp
+
+WhenYouSeeThisCShouldHaveNeighbors:
+	nop
+	nop
+	nop
 
 	; calculate NewTemps address
 	ld HL, NewTemps
 	pop DE ; restore block index
 	LongAdd H,L, D,E, H,L
 
+	pop BC ; restore new temp to C
+
 	; add final temp to NewTemps
 	ld A, [HL]
-	add B
+	add C
 	jr nc, .noMaxTemp2 ; check overflow
 	; exceeded 255, cap to 255
 	ld A, $ff
 .noMaxTemp2
 	ld [HL], A
 
+	ret
+
+
+; DE = neighbor's block index, B = amount to transfer
+; Clobbers A, HL.
+TransferNeighbor:
+	ld HL, NewTemps
+	LongAdd H,L, D,E, H,L
+	ld A, [HL]
+	add B
+	jr nc, .noOverflow
+	ld A, $ff
+.noOverflow
+	ld [HL], A
 	ret
 
 

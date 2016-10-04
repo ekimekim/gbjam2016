@@ -18,6 +18,17 @@ LongAdd: MACRO
 	ld \5, A
 	ENDM
 
+; Subtract 16-bit reg pairs or immediates \1\2 and \3\4, putting result in \5\6, which may be the same as either.
+; Cannot use SF. Clobbers A. Sets or resets carry as per normal subtract.
+LongSub: MACRO
+	ld A, \2
+	sub \4
+	ld \6, A
+	ld A, \1
+	sbc \3
+	ld \5, A
+	ENDM
+
 ; Shift 16-bit reg pair \1\2 (not AF) left once. Sets carry as per normal shift.
 ; This corresponds to doubling the (unsigned) value.
 LongShiftL: MACRO
@@ -31,3 +42,4 @@ LongShiftL: MACRO
 LongShiftR: MACRO
 	srl \1
 	rr \2
+	ENDM
