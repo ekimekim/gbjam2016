@@ -58,8 +58,8 @@ BlockToTile::
 	ld D, TileBurnt
 	ld A, B ; load fuel
 	; fuel < 32?
-	and %11100000 ; sets the zero flag if the result is zero, ie. A < 32
-	jr z, .addStyle ; if < 32, it's burnt
+	and %11110000 ; sets the zero flag if the result is zero, ie. A < 32
+	jr z, .addStyle ; if < 16, it's burnt
 .notburnt
 	ld DE, LushThresholdTable
 	ld A, C
