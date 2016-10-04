@@ -94,13 +94,13 @@ Modulo5:
 ;   New fuel = fuel - burn rate
 ;   New temp = temp + burn rate * 3
 ; Block gives heat to the 4 blocks around it:
-;   Transfer amount = temp / 32
+;   Transfer amount = (temp+1) / 32
 ;   Heat is removed from block and added to neighbor
 ; Block loses heat to the environment
 ;   If block is on an edge:
-;     Transfer amount = (temp/32) * 3/4
+;     Transfer amount = ((temp+1)/32) * 3/4
 ;   Otherwise
-;     Transfer amount = (temp/32) / 2
+;     Transfer amount = ((temp+1)/32) / 2
 ;   The greater loss on edges accounts for the fact that it gave less heat to neighbors.
 RunStepOneBlock:
 	; As a test, all we do here is set new temp to be temp + fuel/16
@@ -212,7 +212,11 @@ RunStepOneBlock:
 	push BC ; save old temp and new temp so far
 	push DE ; restore and re-save block index
 
-	; calculate how much heat transfer as temperature / 32
+	; calculate how much heat transfer as (temperature+1) / 32
+	inc B
+	jr nc, .noOverflowFudge
+	ld B, $ff
+.noOverflowFudge
 	REPT 5
 	srl B
 	ENDR

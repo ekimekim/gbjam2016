@@ -32,7 +32,7 @@ def step():
 				dt[y][x] += min(255, burn_rate * 3)
 
 			# move heat to neighbors
-			transfer = temp / 32
+			transfer = (temp+1) / 32
 			neighbors = 0
 			for dy, dx in [(-1, 0), (1, 0), (0, -1), (0, 1)]: # no diagonals
 				if (0 <= y + dy < maxY) and (0 <= x + dx < maxX):
