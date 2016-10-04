@@ -11,14 +11,14 @@ FF 20 00,FF 40 01,FF 80 02
 40 15 00,40 40 01,40 80 02
 
 // burnt: grass, tree, house
-00 05 00,00 05 01,00 05 02
+20 05 00,20 05 01,20 05 02
 
 // normal: grass, tree, house
 //(grass has reduced fuel by design)
-00 20 00,00 40 01,00 80 02
+20 20 00,20 40 01,20 80 02
 
 // lush:
 // (grass has reduced fuel by design)
-00 40 00,00 80 01,00 FF 02
+20 40 00,20 80 01,20 FF 02
 
 // any line containing // is a comment
