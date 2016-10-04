@@ -93,6 +93,15 @@ Modulo5:
 ;   If burn rate > fuel, burn rate = fuel
 ;   New fuel = fuel - burn rate
 ;   New temp = temp + burn rate * 3
+; Block gives heat to the 4 blocks around it:
+;   Transfer amount = temp / 32
+;   Heat is removed from block and added to neighbor
+; Block loses heat to the environment
+;   If block is on an edge:
+;     Transfer amount = (temp/32) * 3/4
+;   Otherwise
+;     Transfer amount = (temp/32) / 2
+;   The greater loss on edges accounts for the fact that it gave less heat to neighbors.
 RunStepOneBlock:
 	; As a test, all we do here is set new temp to be temp + fuel/16
 
@@ -199,16 +208,14 @@ RunStepOneBlock:
 	ld C, B ; temp so far = old temp
 .afterburn
 
+	pop DE
+	push BC ; save old temp and new temp so far
+	push DE ; restore and re-save block index
+
 	; calculate how much heat transfer as temperature / 32
 	REPT 5
 	srl B
 	ENDR
-
-	; get it working now, fast later!
-
-	pop DE
-	push BC ; save transfer and new temp so far
-	push DE ; restore and re-save block index
 
 	ld C, 4 ; we'll use this flag to count our neighbors
 
@@ -276,7 +283,6 @@ RunStepOneBlock:
 	dec DE ; left neighbor = index - 1
 	call TransferNeighbor
 	dec C
-	inc DE ; make sure block index is set correctly again
 	jp .afterNeighbors
 
 .hasBothSideNeighbors
@@ -293,23 +299,50 @@ RunStepOneBlock:
 	inc DE ; right neighbor = index + 1
 	call TransferNeighbor
 	dec C
-	dec DE ; make sure block index is set correctly again
 
 .afterNeighbors
-	; all code paths above lead to DE = block index here.
-	; TODO upto check side neighbors, check value of C, subtract temp
 
-WhenYouSeeThisCShouldHaveNeighbors:
-	nop
-	nop
-	nop
+	ld A, C ; A = 4 - (num neighbors)
+	jr nz, .isOnEdge ; if less than 4 neighbors, we're on the edge and have different heat loss
+.isNotOnEdge
+	; initial loss = temp / 64 = transfer / 2
+	ld A, B
+	srl A ; A = transfer /2
+	jr .afterEdge
+.isOnEdge
+	; initial loss = 3 * temp / 128
+	ld A, B ; A = transfer
+	sla A ; A = 2 * transfer (can't overflow, too small)
+	add B ; A = 3 * transfer
+	srl A
+	srl A ; A = 3 * transfer / 4
+.afterEdge
+	; A = initial loss, B = transfer, C = 4 - (neighbors)
+	; We need to do A += B * (4-C)
+	ld D, A
+	ld A, 4
+	sub C
+	ld C, A ; C = 4-C, note C is 2-4
+
+	ld A, D ; A = loss so far
+	; A += B * C
+.multloop
+	add B
+	dec C
+	jr nz, .multloop
+	; A = total loss
+
+	pop DE ; restore block index
+	pop BC ; restore new temp to C
+	ld B, A
+	ld A, C
+	sub B ; A = C - B
+	; We know this can't underflow. C >= old temp, B is max old temp / 8
+	ld C, A ; C = final new temp
 
 	; calculate NewTemps address
 	ld HL, NewTemps
-	pop DE ; restore block index
 	LongAdd H,L, D,E, H,L
-
-	pop BC ; restore new temp to C
 
 	; add final temp to NewTemps
 	ld A, [HL]
