@@ -174,10 +174,31 @@ UpdateFireman::
 	;pop delta burn
 	ld C, B 
 	
-	;set entire first row on fire
-	ld B, 20
-.forBlock
+	;Get x pos
+	ld DE, WorkingSprites
+	inc DE	
+	ld A, [DE]
+	; divide by 8
+	SRL A
+	SRL A
+	SRL A
+	
+	sub 1 ;removed x offset
+	jp c, .burnFinished; ;within bounds?
+	
+	cp 18
+	jp nc, .burnFinished ;within bounds?
 
+	;--- offset x --
+	; todo: multiply
+.forX
+	inc HL
+	inc HL
+	inc HL
+	dec A
+	jp nz, .forX
+
+	;--- apply fire ---
 	ld A, [HL]
 	add C
 	
@@ -197,9 +218,7 @@ UpdateFireman::
 	inc HL
 	inc HL
 
-	dec B
-	jp nz, .forBlock
-
+	
 .burnFinished
 	
 	
