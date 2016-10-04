@@ -1,6 +1,6 @@
 include "vram.asm"
 include "ioregs.asm"
-
+include "longcalc.asm"
 include "hram.asm"
 
 section "Fireman", ROM0
@@ -82,7 +82,7 @@ UpdateFireman::
 
 	; sample some amount of time
 	ld A, [TimerCounterSlow]
-	and A, %00000100
+	and A, %00000010
 
 	jp nz, .useAltTile
 
@@ -136,22 +136,73 @@ UpdateFireman::
 	
 	
 	;--- SET BLOCKS ON FIRE ---
-	ld HL, Level
-	ld B, 10
-.forEachTile
+	; abcdehl
+	
+	jp .dondebug
+.dondebug
+	
+	; upper bounds check
+	ld A, [WorkingSprites] ;get y pos
+	; divide by 8
+	SRL A
+	SRL A
+	SRL A
+	
+	sub 2 ;removed y offset
+	jp c, .burnFinished; ;within bounds?
+	
+	cp 18
+	jp nc, .burnFinished ;within bounds?
+	
+	;stash delta burn
+	ld B, C 
+	
+	;get y block pos
+	ld C, A
+	
+	ld HL, 0 ; clear
+	ld DE, 60 ;size of row
+	
+	;60 * y pos
+	call Multiply
+	
+	; HL is now size
+	ld DE, Level ; DL is level addr
+	; Level + yOffset
+	LongAdd H,L, D,E, H,L
+	
+	;pop delta burn
+	ld C, B 
+	
+	;set entire first row on fire
+	ld B, 20
+.forBlock
+
 	ld A, [HL]
 	add C
+	
+	jp z, .capAt255
+	jp .applySuccess
+	
+.capAt255
+	;If went over
+	ld A, 255
+	jp .applySuccess
+
+.applySuccess
+
 	ld [HL], A
-	
+
 	inc HL
 	inc HL
 	inc HL
-	
+
 	dec B
-	jp nz, .forEachTile
+	jp nz, .forBlock
+
+.burnFinished
 	
 	
-	ret
 
 ;----------------------------	
 LoadDPad::
