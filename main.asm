@@ -55,20 +55,24 @@ Start::
 	; ok, we're good to go
 	EI
 
+	ld B, $00 ; initial setup counts as frame 0, wait for next 8Hz step before doing first step.
+
+.wait:
+
+	halt ; sleep until next interrupt, which means we might be ready to actually do something
+
 .mainloop:
-	; Reset timer and TimerFired flag
-	xor A
-	ld [TimerCounter], A ; reset timer
-	ld [TimerFired], A ; unset "timer has fired" flag
 
-	call Update
+	; run simulation at 8Hz = top 5 bits of TimerCounterSlow, which updates at 64Hz.
+	; we have a "last step number" in B which we're waiting for TimerCounterSlow to not equal.
 
-.timerloop
-	ld A, [TimerFired]
-	and A
-	jr nz, .mainloop ; if timer has occurred, time for the next update
-	halt ; otherwise wait until next interrupt
-	jr .timerloop ; then check again if it was the interrupt we wanted
+	ld A, [TimerCounterSlow]
+	and %11111000 ; get 8Hz "step number" counter
+	cp B ; compare to previous step number
+	jr z, .wait ; if equal to previous step, sleep until it may have changed
+
+	call UpdateSlow
+	jp .mainloop
 
 
 ; Called upon vblank
@@ -87,15 +91,14 @@ Draw::
 	reti
 
 
+; Called on a timer interrupt at 64Hz. May still be interrupted by VBlank.
 Update::
 	call UpdateFireman
+	ret
 
-	; run simulation step at 8Hz (slow counter updates at 64hz, so we look for the 3 lowest bits = 0)
-	ld A, [TimerCounterSlow]
-	and %00000111
-	jr nz, .skipRunStep
+
+; Called at 8Hz by the main loop.
+UpdateSlow::
 	call RunStep
 	call RenderBlocks
-.skipRunStep
-
 	ret

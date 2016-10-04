@@ -57,15 +57,43 @@ HaltForever::
 	; halt can be recovered from after an interrupt or reset, so halt again
 	jp HaltForever
 
+; Timer handler is long-running, so we allow other interrupts to interrupt us.
+; We use a flag in HRAM to avoid running if we're already running.
 TimerHandler::
 	push AF
+	push BC
+	push DE
 	push HL
+
+	; increment slow counter
+	ld A, [TimerCounterSlow]
+	inc A
+	ld [TimerCounterSlow], A
+
+	; if we aren't already inside Update, call Update
+	ld A, [TimerUpdateIsRunning]
+	and A
+	jr nz, .alreadyRunning
+
+	; set the flag so we can't call again
+	; note there's no race between checking and setting TimerUpdateIsRunning because we have interrupts disabled
 	ld A, 1
-	ld [TimerFired], A
-	ld HL, TimerCounterSlow
-	add [HL] ; A contained 1; now contains [HL] + 1
-	ld [HL], A
+	ld [TimerUpdateIsRunning], A
+
+	; It's now safe to enable interrupts for the duration of Update
+	EI
+	call Update
+	DI
+
+	; now that we've disabled interrupts again, we can safely unset the flag
+	xor A
+	ld [TimerUpdateIsRunning], A
+
+.alreadyRunning
+
 	pop HL
+	pop DE
+	pop BC
 	pop AF
 	reti
 
