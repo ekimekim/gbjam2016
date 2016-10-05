@@ -21,7 +21,6 @@ UpdateFireman::
 	;ld E, %0001010
 	;;HACK - PRESS DOWN RIGHT
 	;;ld E, %0110000
-	
 
 	; is pos dity = false
 	ld C, 0
@@ -47,10 +46,9 @@ UpdateFireman::
 .moveUpFinish
 
 	;--- FINISH Y ---
-	ld [HL], A
+	ld [HL+], A ; also reposition HL to point to X
 
 	;--- START X ---
-	inc HL
 	ld A, [HL]
 
 	;--- MOVE RIGHT --
@@ -70,10 +68,9 @@ UpdateFireman::
 .moveLeftFinish
 
 	;--- FINISH X ---
-	ld [HL], A
+	ld [HL+], A ; also reposition HL to point to tile index
 
 	;--- SET TILE INDEX ---
-	inc HL
 
 	; go to idle if no move
 	ld A, C
@@ -88,25 +85,25 @@ UpdateFireman::
 
 	; use tile 0
 	ld A, %00001110
-	ld [HL], A
+	ld [HL+], A
 	jp .setTileIndexFinish
 
 .useAltTile
 	; use tile 1
 	ld a, %00001111
-	ld [HL], A
+	ld [HL+], A
 	jp .setTileIndexFinish
 
 .useIdleTile
 	; use tile -1
 	ld a, %00001101
-	ld [HL], A
+	ld [HL+], A
 	jp .setTileIndexFinish
 
 .setTileIndexFinish
+	; note that HL is incremented in one of the 3 paths above, and now points to sprite flags
 
 	;--- SET SPRITE FLAGS ---
-	inc HL
 	ld [HL], 0 ;use transparent palette
 
 	;--- load buttons state ---

@@ -9,13 +9,13 @@ EnableSprites::
 	ld HL, LCDControl
 	set SpritesBit, [HL]
 	ret
-	
+
 DisableSprites::
 	ld HL, LCDControl
 	res SpritesBit, [HL]
 	ret
 
-	; HL = HL + DE * C
+; HL = HL + DE * C
 ; Multiply DE by C and *add* the result to HL. Does not clobber A, B or C. Clobbers DE.
 ; If you care about speed and both your numbers are 8 bit, put the one that is probably small in C.
 Multiply::

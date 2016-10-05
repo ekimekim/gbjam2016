@@ -1,6 +1,12 @@
 include "ioregs.asm"
 include "hram.asm"
 
+Section "Stack", WRAM0
+
+StackBottom::
+	ds 128
+StackTop::
+
 section "Main", ROM0
 
 ; Actual execution starts here

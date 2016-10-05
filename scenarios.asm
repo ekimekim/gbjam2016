@@ -1,5 +1,9 @@
 
-Section "Scenarios", ROM0
+Section "Scenario Data", ROMX, BANK[1]
+
+include "scenariosdata.asm"
+
+Section "Scenario loading methods", ROM0
 
 TestLevelSize EQU (20*18*3)
 
@@ -18,11 +22,10 @@ LoadScenarioSouthVillage::
 	call LoadScenarioHL
 	ret
 
+; Loads a level from an addres given in HL. Clobbers all.
 LoadScenarioHL::
-	;HL should be set to target level
 	ld BC, TestLevelSize
 	ld DE, Level
-
 
 .loop
 	ld A, [HL+] ; also increments HL
@@ -36,5 +39,3 @@ LoadScenarioHL::
 	jr nz, .loop
 	ret
 
-
-include "scenariosdata.asm"
