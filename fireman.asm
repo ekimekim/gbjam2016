@@ -163,20 +163,20 @@ UpdateFireman::
 	ld C, A
 	
 	ld HL, 0 ; clear
-	ld DE, 60 ;size of row
+	ld DE, 20 * 3 ; size of row
 	
-	;60 * y pos
+	; 60 * y pos
 	call Multiply
 	
 	; HL is now size
-	ld DE, Level ; DL is level addr
+	ld DE, Level ; DE is level addr
 	; Level + yOffset
 	LongAdd H,L, D,E, H,L
 	
-	;pop delta burn
-	ld C, B 
+	; restore delta burn
+	ld C, B
 	
-	;Get x pos
+	; Get x pos
 	ld DE, WorkingSprites
 	inc DE	
 	ld A, [DE]
@@ -188,42 +188,43 @@ UpdateFireman::
 	sub 1 ;removed x offset
 	jp c, .burnFinished; ;within bounds?
 	
-	cp 18
+	cp 20
 	jp nc, .burnFinished ;within bounds?
 
 	;--- offset x --
-	; todo: multiply
-.forX
-	inc HL
-	inc HL
-	inc HL
-	dec A
-	jp nz, .forX
+	ld B, A
+	sla B ; B = offset x * 2
+	add B ; A = offset x + offset x * 2 = offset x * 3. we know this won't carry, offset x too small
+	; HL += 3 * offset x
+	add L ; maybe set carry
+	ld L, A
+	ld A, H
+	adc 0 ; add 1 if carry set
+	ld H, A
 
 	;--- apply fire ---
 	ld A, [HL]
 	add C
-	
-	;jp c, .capAt255
-	;jp .applySuccess
-	
-;.capAt255
-	;If went over
-	;ld A, 255
-	;jp .applySuccess	
+	jr nc, .applySuccess
 
-;.applySuccess
-
+	; we either overflowed (if C > 0) or underflowed (if C < 0)
+	; C < 0 if the top bit is set
+	ld A, C
+	and %10000000
+	jr z, .overflow
+.underflow
+	; cap to 0
+	ld A, 0
+	jr .applySuccess
+.overflow
+	; cap to 255
+	ld A, $ff
+.applySuccess
 	ld [HL], A
 
-	inc HL
-	inc HL
-	inc HL
-
-	
 .burnFinished
-	
-	
+	ret
+
 
 ;----------------------------	
 LoadDPad::
