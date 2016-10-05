@@ -124,14 +124,19 @@ UpdateFireman::
 	bit 0, E
 	jp nz, .pressAFinish ; skip to end
 
-	inc C ; Dirty position
+	inc C
+	inc C
+	inc C
+	
 .pressAFinish
 	
 	;--- PRESS B ---
 	bit 1, E
 	jp nz, .pressBFinish ; skip to end
 
-	dec C ; Dirty position
+	dec C
+	dec C
+	dec C
 .pressBFinish
 	
 	
@@ -202,15 +207,15 @@ UpdateFireman::
 	ld A, [HL]
 	add C
 	
-	jp z, .capAt255
-	jp .applySuccess
+	;jp c, .capAt255
+	;jp .applySuccess
 	
-.capAt255
+;.capAt255
 	;If went over
-	ld A, 255
-	jp .applySuccess
+	;ld A, 255
+	;jp .applySuccess	
 
-.applySuccess
+;.applySuccess
 
 	ld [HL], A
 
