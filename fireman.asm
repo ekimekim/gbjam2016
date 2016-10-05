@@ -146,26 +146,23 @@ UpdateFireman::
 	SRL A
 	SRL A
 	SRL A
-	
+
 	; remove y offset
 	sub 2 
 	jp c, .burnFinished; ; out of bounds
-	
+
 	cp 18
 	jp nc, .burnFinished ; out of bounds
+
+	;get y block pos
+	ld C, A
 	
+	ld HL, Level ; level start
+	ld DE, 20 * 3 ; size of row
 	
-	ld C, A ; row index
-	ld DE, 60 ; size of row
-	ld HL, 0 ; ; clear 
-	
-	;60 * y pos
+	; HL = Level + row size * y pos
 	call Multiply
-	
-	; HL is now size
-	ld DE, Level ; DL is level addr
-	; Level + yOffset
-	LongAdd H,L, D,E, H,L
+	; HL is now start of target row
 	
 	;Get x pos
 	ld DE, WorkingSprites
@@ -180,24 +177,21 @@ UpdateFireman::
 	sub 1 
 	jp c, .burnFinished ; out of bounds
 	
-	cp 18
+	cp 20
 	jp nc, .burnFinished ; out of bounds
 
-	;--- Shift for x --
-	; todo: multiply
-.forX
-	inc HL
-	inc HL
-	inc HL
-	
-	dec A
-	jp nz, .forX
+	;--- offset x --
+	ld B, A
+	sla B ; B = offset x * 2
+	add B ; A = offset x + offset x * 2 = offset x * 3. we know this won't carry, offset x too small
+	; HL += 3 * offset x
+	add L ; maybe set carry
+	ld L, A
+	ld A, H
+	adc 0 ; add 1 if carry set
+	ld H, A
 
 	;--- apply fire to HL ---
-	jp .debugging
-.debugging
-
-
 	ld A, [JoyIO]
 		
 	bit 0, A
@@ -232,20 +226,18 @@ UpdateFireman::
 	ld B, CoolAmount
 	sub B
 	
-	jp nc, .applyAToHL ; added fire
-	; too much fire
+	jp nc, .applyAToHL ; added cool
+	; too much cool
 	ld A, 0
 	
-	jp .applyAToHL ; done
+	; done
 	
 .applyAToHL
 	ld [HL], A
 	
 .burnFinished
-	
 	ret
 
-	
 
 ;----------------------------	
 LoadDPad::
