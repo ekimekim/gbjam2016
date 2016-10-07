@@ -3,7 +3,17 @@ include "ioregs.asm"
 include "longcalc.asm"
 include "hram.asm"
 
-section "Fireman", ROM0
+;Section "Fireman Working RAM", WRAM0
+
+; Stores the new temperature values while calculating a step
+;LastInput:
+;	ds 0
+
+Section "Fireman Methods", ROM0
+
+BurnAmount EQU 2
+MinBurnAmount EQU 60
+CoolAmount EQU 10
 
 ;E used for joypad
 ;HL sprite
@@ -15,12 +25,6 @@ UpdateFireman::
 	call LoadDPad
 	ld A, [JoyIO]
 	ld E, A
-
-	;;HACK DOWN AND RIGHT ARE PRESSED
-	;;x3, Down, Up, Left, Right
-	;ld E, %0001010
-	;;HACK - PRESS DOWN RIGHT
-	;;ld E, %0110000
 
 	; is pos dity = false
 	ld C, 0
@@ -46,9 +50,10 @@ UpdateFireman::
 .moveUpFinish
 
 	;--- FINISH Y ---
-	ld [HL+], A ; also reposition HL to point to X
+	ld [HL], A
 
 	;--- START X ---
+	inc HL
 	ld A, [HL]
 
 	;--- MOVE RIGHT --
@@ -68,9 +73,10 @@ UpdateFireman::
 .moveLeftFinish
 
 	;--- FINISH X ---
-	ld [HL+], A ; also reposition HL to point to tile index
+	ld [HL], A
 
 	;--- SET TILE INDEX ---
+	inc HL
 
 	; go to idle if no move
 	ld A, C
@@ -85,94 +91,83 @@ UpdateFireman::
 
 	; use tile 0
 	ld A, %00001110
-	ld [HL+], A
+	ld [HL], A
 	jp .setTileIndexFinish
 
 .useAltTile
 	; use tile 1
 	ld a, %00001111
-	ld [HL+], A
+	ld [HL], A
 	jp .setTileIndexFinish
 
 .useIdleTile
 	; use tile -1
 	ld a, %00001101
-	ld [HL+], A
+	ld [HL], A
 	jp .setTileIndexFinish
 
 .setTileIndexFinish
-	; note that HL is incremented in one of the 3 paths above, and now points to sprite flags
 
 	;--- SET SPRITE FLAGS ---
+	inc HL
 	ld [HL], 0 ;use transparent palette
 
 	;--- load buttons state ---
 	call LoadButtons
+;	ld A, [JoyIO]
+	
+;	ld HL, LastInput
+;	ld B, [HL]
+
+;	xor B
+	
+;	bit 0, A
+;	jp z, .burnFinished ; input unchanged
+;	bit 1, A
+;	jp z, .burnFinished ; input unchanged
+
+	; input changed! 
 	ld A, [JoyIO]
-	ld E, A
+	bit 0, A
+	jp z, .anyInputDetected ; pressing A button;
+	bit 1, A
+	jp z, .anyInputDetected ; pressing B button
+	
+	; buttons were released
+	jp .burnFinished 
 
-	;;HACK - PRESS A
-	;;ld E, %0111010
-	
-	; flame amount
-	ld C, 0
-	
-	;--- PRESS A ---
-	bit 0, E
-	jp nz, .pressAFinish ; skip to end
-
-	inc C
-	inc C
-	inc C
-	
-.pressAFinish
-	
-	;--- PRESS B ---
-	bit 1, E
-	jp nz, .pressBFinish ; skip to end
-
-	dec C
-	dec C
-	dec C
-.pressBFinish
-	
+.anyInputDetected
 	
 	;--- SET BLOCKS ON FIRE ---
-	; abcdehl
 	
-	jp .dondebug
-.dondebug
-	
-	; upper bounds check
-	ld A, [WorkingSprites] ;get y pos
-	; divide by 8
+	; get pixel y
+	ld A, [WorkingSprites] 
+	; get block y, divide by 8 
 	SRL A
 	SRL A
 	SRL A
 	
-	sub 2 ;removed y offset
-	jp c, .burnFinished; ;within bounds?
+	; remove y offset
+	sub 2 
+	jp c, .burnFinished; ; out of bounds
 	
 	cp 18
-	jp nc, .burnFinished ;within bounds?
+	jp nc, .burnFinished ; out of bounds
 	
-	;stash delta burn
-	ld B, C 
 	
-	;get y block pos
-	ld C, A
+	ld C, A ; row index
+	ld DE, 60 ; size of row
+	ld HL, 0 ; ; clear 
 	
-	ld HL, Level ; level start
-	ld DE, 20 * 3 ; size of row
-	
-	; HL = Level + row size * y pos
+	;60 * y pos
 	call Multiply
-	; HL is now start of target row
 	
-	; restore delta burn
-	ld C, B
+	; HL is now size
+	ld DE, Level ; DL is level addr
+	; Level + yOffset
+	LongAdd H,L, D,E, H,L
 	
-	; Get x pos
+	;Get x pos
 	ld DE, WorkingSprites
 	inc DE	
 	ld A, [DE]
@@ -181,46 +176,76 @@ UpdateFireman::
 	SRL A
 	SRL A
 	
-	sub 1 ;removed x offset
-	jp c, .burnFinished; ;within bounds?
+	;remove x offset
+	sub 1 
+	jp c, .burnFinished ; out of bounds
 	
-	cp 20
-	jp nc, .burnFinished ;within bounds?
+	cp 18
+	jp nc, .burnFinished ; out of bounds
 
-	;--- offset x --
-	ld B, A
-	sla B ; B = offset x * 2
-	add B ; A = offset x + offset x * 2 = offset x * 3. we know this won't carry, offset x too small
-	; HL += 3 * offset x
-	add L ; maybe set carry
-	ld L, A
-	ld A, H
-	adc 0 ; add 1 if carry set
-	ld H, A
+	;--- Shift for x --
+	; todo: multiply
+.forX
+	inc HL
+	inc HL
+	inc HL
+	
+	dec A
+	jp nz, .forX
 
-	;--- apply fire ---
+	;--- apply fire to HL ---
+	jp .debugging
+.debugging
+
+
+	ld A, [JoyIO]
+		
+	bit 0, A
+	jp z, .buttonAInputDetected ; pressing A button
+	bit 1, A
+	jp z, .buttonBInputDetected ; pressing B button
+
+	; was IO modified in interrupt?
+	jp .burnFinished
+	
+.buttonAInputDetected
 	ld A, [HL]
-	add C
-	jr nc, .applySuccess
+	cp MinBurnAmount
+	jp nc, .alreadyOnFire
+		
+	;players need to see an change
+	ld A, MinBurnAmount
+	
+.alreadyOnFire
+	
+	ld B, BurnAmount
+	add B
+	
+	jp nc, .applyAToHL ; added fire
+	; too much fire
+	ld A, 255
+	
+	jp .applyAToHL ; done
 
-	; we either overflowed (if C > 0) or underflowed (if C < 0)
-	; C < 0 if the top bit is set
-	ld A, C
-	and %10000000
-	jr z, .overflow
-.underflow
-	; cap to 0
+.buttonBInputDetected
+	ld A, [HL]
+	ld B, CoolAmount
+	sub B
+	
+	jp nc, .applyAToHL ; added fire
+	; too much fire
 	ld A, 0
-	jr .applySuccess
-.overflow
-	; cap to 255
-	ld A, $ff
-.applySuccess
+	
+	jp .applyAToHL ; done
+	
+.applyAToHL
 	ld [HL], A
-
+	
 .burnFinished
+	
 	ret
 
+	
 
 ;----------------------------	
 LoadDPad::
@@ -228,7 +253,7 @@ LoadDPad::
 	ld HL, JoyIO
 	ld [HL], JoySelectDPad
 
-	ld b, 16
+	ld b, 8
 .waitStart
 	dec b
 	jp nz, .waitStart
