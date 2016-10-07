@@ -162,16 +162,12 @@ UpdateFireman::
 	;get y block pos
 	ld C, A
 	
-	ld HL, 0 ; clear
+	ld HL, Level ; level start
 	ld DE, 20 * 3 ; size of row
 	
-	; 60 * y pos
+	; HL = Level + row size * y pos
 	call Multiply
-	
-	; HL is now size
-	ld DE, Level ; DE is level addr
-	; Level + yOffset
-	LongAdd H,L, D,E, H,L
+	; HL is now start of target row
 	
 	; restore delta burn
 	ld C, B
