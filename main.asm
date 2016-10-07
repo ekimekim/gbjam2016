@@ -20,7 +20,8 @@ Start::
 	call LoadHRAMData
 
 	; Initialize game state
-	call LoadScenarioSpiral
+	ld C, 0
+	call LoadScenarioNumber ; load level 0
 	call RenderBlocks
 	call ClearWorkingSprites
 
@@ -107,4 +108,6 @@ Update::
 UpdateSlow::
 	call RunStep
 	call RenderBlocks
+	call CheckLevelEnd
 	ret
+
