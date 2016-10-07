@@ -3,22 +3,19 @@ include "ioregs.asm"
 include "longcalc.asm"
 include "hram.asm"
 
-;Section "Fireman Working RAM", WRAM0
+Section "Fireman Working RAM", WRAM0
 
-; Stores the new temperature values while calculating a step
-;LastInput:
-;	ds 0
+LastInput:
+	ds 0
 
 Section "Fireman Methods", ROM0
 
+InputWait EQU 4
 BurnAmount EQU 2
-MinBurnAmount EQU 60
+MinBurnAmount EQU 80
 CoolAmount EQU 10
 
-;E used for joypad
-;HL sprite
-;A sprite changes
-;C position dirty
+
 UpdateFireman::
 
 	;load joy state
@@ -114,20 +111,17 @@ UpdateFireman::
 
 	;--- load buttons state ---
 	call LoadButtons
-;	ld A, [JoyIO]
-	
-;	ld HL, LastInput
-;	ld B, [HL]
-
-;	xor B
-	
-;	bit 0, A
-;	jp z, .burnFinished ; input unchanged
-;	bit 1, A
-;	jp z, .burnFinished ; input unchanged
-
-	; input changed! 
 	ld A, [JoyIO]
+	
+	ld HL, LastInput
+	ld B, [HL]
+
+	cp B 
+	jp z, .burnFinished ; input unchanged
+	
+	; input changed! 
+	ld [LastInput], A
+	
 
 	bit 3, A ; pressing Start button
 	jp nz, .noStartButton
@@ -258,7 +252,7 @@ LoadDPad::
 	ld HL, JoyIO
 	ld [HL], JoySelectDPad
 
-	ld b, 8
+	ld b, InputWait
 .waitStart
 	dec b
 	jp nz, .waitStart
@@ -271,7 +265,7 @@ LoadButtons::
 	ld HL, JoyIO
 	ld [HL], JoySelectButtons
 
-	ld b, 16
+	ld b, InputWait
 .waitStart
 	dec b
 	jp nz, .waitStart
