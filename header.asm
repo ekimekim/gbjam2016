@@ -71,14 +71,14 @@ TimerHandler::
 	ld [TimerCounterSlow], A
 
 	; if we aren't already inside Update, call Update
-	ld A, [TimerUpdateIsRunning]
+	ld A, [TimerUpdateLock]
 	and A
 	jr nz, .alreadyRunning
 
 	; set the flag so we can't call again
-	; note there's no race between checking and setting TimerUpdateIsRunning because we have interrupts disabled
+	; note there's no race between checking and setting TimerUpdateLock because we have interrupts disabled
 	ld A, 1
-	ld [TimerUpdateIsRunning], A
+	ld [TimerUpdateLock], A
 
 	; It's now safe to enable interrupts for the duration of Update
 	EI
@@ -87,7 +87,7 @@ TimerHandler::
 
 	; now that we've disabled interrupts again, we can safely unset the flag
 	xor A
-	ld [TimerUpdateIsRunning], A
+	ld [TimerUpdateLock], A
 
 .alreadyRunning
 

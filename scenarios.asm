@@ -74,7 +74,16 @@ CheckLevelEnd::
 	ld [LevelEndTickCount], A
 	cp 16 ; at 8Hz, 2sec
 	ret nz ; if we haven't hit enough ticks yet, do nothing
+	call Score ; end the level and do scoring
+	; fall through to .fireFound to reset LevelEndTickCount
 
+.fireFound
+	xor A
+	ld [LevelEndTickCount], A
+	ret
+
+
+LoadNextLevel::
 	; determine next level
 	ld A, [LevelNumber]
 	inc A
@@ -86,9 +95,4 @@ CheckLevelEnd::
 	ld [LevelNumber], A
 	ld C, A
 	call LoadScenarioNumber
-	; fall through to .fireFound to reset LevelEndTickCount
-
-.fireFound
-	xor A
-	ld [LevelEndTickCount], A
 	ret

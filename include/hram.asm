@@ -2,8 +2,9 @@
 ; Tracks which quarter of the working grid we're copying to the vram on the next VBlank
 WorkingGridPartNumber EQU $ff80
 
-; Whether the update interrupt is currently running. This prevents it from interrupting itself.
-TimerUpdateIsRunning EQU $ff81
+; When this is 1, fast Update should not run. This protects it from interrupting itself,
+; as well as allowing it to be turned off during special circumstances.
+TimerUpdateLock EQU $ff81
 
 ; This counter increments every time TimerCounter overflows
 ; We set timer to 2^14 Hz, so this counter counts at 64Hz.
@@ -21,3 +22,9 @@ LevelEndTickCount EQU $ff84
 ; 1: Computing new temperatures. Temperature changes should be added to NewTemps.
 ; 2: Copying new temperatures to Level. Temperature changes cannot be reliably written.
 RunStepStateFlag EQU $ff85
+
+; This tracks the value of the "tick number" (top 5 bits of TimerCounterSlow) at the time
+; of the last slow tick. This is used to trigger a new slow tick at 8Hz.
+; Note the initial value of 0, which says that game init "counts as" the first slow tick
+; and the actual first slow tick happens 1/8th of a second later.
+LastSlowTickNumber EQU $ff86

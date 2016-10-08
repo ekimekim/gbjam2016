@@ -62,24 +62,28 @@ Start::
 	; ok, we're good to go
 	EI
 
-	ld B, $00 ; initial setup counts as frame 0, wait for next 8Hz step before doing first step.
-
-.wait:
-
-	halt ; sleep until next interrupt, which means we might be ready to actually do something
-
 .mainloop:
+	call WaitForNextSlowTick
+	call UpdateSlow
+	jp .mainloop
 
-	; run simulation at 8Hz = top 5 bits of TimerCounterSlow, which updates at 64Hz.
-	; we have a "last step number" in B which we're waiting for TimerCounterSlow to not equal.
 
+; Wait until the next slow tick should run
+; We run the simulation at 8Hz = top 5 bits of TimerCounterSlow, which updates at 64Hz.
+; we have a "last step number" LastSlowTickNumber which we're waiting for TimerCounterSlow to not equal.
+WaitForNextSlowTick::
+	ld A, [LastSlowTickNumber]
+	ld B, A
+.loop
 	ld A, [TimerCounterSlow]
 	and %11111000 ; get 8Hz "step number" counter
 	cp B ; compare to previous step number
-	jr z, .wait ; if equal to previous step, sleep until it may have changed
-
-	call UpdateSlow
-	jp .mainloop
+	jr nz, .done
+	halt ; if equal to previous step, sleep until it may have changed
+	jr .loop
+.done
+	ld [LastSlowTickNumber], A
+	ret
 
 
 ; Called upon vblank
