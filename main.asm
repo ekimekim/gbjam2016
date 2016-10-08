@@ -71,6 +71,7 @@ Start::
 ; Wait until the next slow tick should run
 ; We run the simulation at 8Hz = top 5 bits of TimerCounterSlow, which updates at 64Hz.
 ; we have a "last step number" LastSlowTickNumber which we're waiting for TimerCounterSlow to not equal.
+; clobbers A, B
 WaitForNextSlowTick::
 	ld A, [LastSlowTickNumber]
 	ld B, A

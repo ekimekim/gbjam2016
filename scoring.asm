@@ -145,6 +145,9 @@ Score::
 	; Macro to help define two near-identical sections below
 _DisplayLoop: MACRO ; args \1 = score to add, \2 = tile to display
 .displayLoop\@
+	push BC
+	call WaitForScoreDelay
+	pop BC
 	ld [HL], \2 ; display tile
 	LongAdd B,C, 0,\1, B,C ; score += score to add
 	push DE
@@ -191,4 +194,39 @@ _DisplayLoop: MACRO ; args \1 = score to add, \2 = tile to display
 ; Does not clobber BC.
 DisplayScore::
 	; TODO
+	ret
+
+
+; Wait until a "score delay" time has passed.
+; Score delay is related to how many things you still have to show, which is passed in as D
+; Less things left -> slower score delay
+; Clobbers A, B, C
+WaitForScoreDelay:
+	; We get a "score delay mask" to mask TimerCounterSlow by.
+	; We start with 11111111 (64Hz), then shift left (double delay) for every leading 0
+	; in the binary form of D. eg. 1xxxxxxx -> 64, 01xxxxxx -> 32, etc to a minimum of 11000000 (1Hz)
+	ld A, D
+	cp 2
+	jr nc, .noMin ; A >= 2?
+	ld A, 2 ; A < 2, set A = 2
+.noMin
+	ld B, $ff
+.calcMask
+	sla A
+	jr c, .done
+	; no carry, A had a leading zero, so add a trailing zero to B
+	sla B
+	jr .calcMask
+.done
+
+	ld A, [TimerCounterSlow]
+	and B
+	ld C, A ; C contains old value
+.wait
+	halt ; pause until timer or something has fired
+	; we have our mask in B. now we wait until the slow counter & that mask changes
+	ld A, [TimerCounterSlow]
+	and B
+	cp C
+	jr z, .wait ; if they match, keep waiting
 	ret
