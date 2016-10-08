@@ -1,5 +1,6 @@
 
 include "longcalc.asm"
+include "hram.asm"
 
 
 Section "Model Working RAM", WRAM0
@@ -392,6 +393,10 @@ ClearNewTemps:
 RunStep::
 	call ClearNewTemps
 
+	; set RunStep state to 1: populating new temps
+	ld A, 1
+	ld [RunStepStateFlag], A
+
 	; call RunStepOneBlock for each index
 	ld DE, 20*18 - 1
 .steploop
@@ -405,6 +410,10 @@ RunStep::
 	cp D
 	jr nz, .steploop
 	call RunStepOneBlock ; one last call with index 0
+
+	; set RunStep state to 2: copying new temps to actual temps
+	ld A, 2
+	ld [RunStepStateFlag], A
 
 	; now update temperatures according to NewTemps
 	ld BC, 20*18
@@ -423,5 +432,9 @@ RunStep::
 	jr nz, .updateloop
 	cp B
 	jr nz, .updateloop
+
+	; set RunStep state to not running
+	xor A
+	ld [RunStepStateFlag], A
 
 	ret
