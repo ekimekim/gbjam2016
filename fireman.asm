@@ -199,14 +199,13 @@ UpdateFireman::
 	ld H, A
 
 	;--- apply fire to HL ---
-	ld A, [JoyIO]
+	ld A, [LastInput]
 		
 	bit 0, A
 	jp z, .buttonAInputDetected ; pressing A button
 	bit 1, A
 	jp z, .buttonBInputDetected ; pressing B button
-
-	; was IO modified in interrupt?
+	
 	jp .burnFinished
 	
 .buttonAInputDetected
