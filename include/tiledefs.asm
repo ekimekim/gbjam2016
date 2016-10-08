@@ -1,6 +1,8 @@
 
 ; example tile map
-TileHighFire EQU 0
+TileBlank EQU 0
+TileHighFire EQU 1
+TileDigits EQU 2
 TileMediumFire EQU $10
 TileLowFire EQU $20
 TileBurnt EQU $30

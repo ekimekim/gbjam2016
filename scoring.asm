@@ -150,11 +150,13 @@ _DisplayLoop: MACRO ; args \1 = score to add, \2 = tile to display
 	pop BC
 	ld [HL], \2 ; display tile
 	LongAdd B,C, 0,\1, B,C ; score += score to add
+	push BC
 	push DE
 	push HL
 	call DisplayScore
 	pop HL
 	pop DE
+	pop BC
 	inc HL ; next actual position
 	inc E ; next X position
 	ld A, E
@@ -198,9 +200,86 @@ _DisplayLoop: MACRO ; args \1 = score to add, \2 = tile to display
 
 
 ; Displays the number stored in BC in 5 decimal digits at tile position Y=1, X=7 to 11
-; Does not clobber BC.
 DisplayScore::
-	; TODO
+
+	; I stole this binary -> BCD algo from the internet
+	; Simplified example of 8 bits -> 3 digits. Algo is:
+	; digits all start at 0 and are 4-bit binary numbers
+	; repeat 8 times:
+	;   for each digit:
+	;     if digit >= 5, digit += 3
+	;   shift left, in order, with carry between them:
+	;	  binary number, ones digit, tens digit, hundreds digit
+	; each 4-bit digit is now a BCD digit
+
+	; in our case, we're going from 16 bits to 5 digits
+	; our input is BC. for our digits, let's use DEL (note: only lower half of D is used)
+	; (num bits) loop var is H
+	ld H, 16
+	ld D, 0
+	ld E, 0
+	ld L, 0
+
+.loop
+
+; args \1 register, \2 is either 0 or 4 (0 to check lower half, 4 to check upper)
+; clobbers B!
+_Check5: MACRO
+	ld A, \1
+	and $0f << \2
+	cp 5 << \2
+	jr c, .lessThan5\@
+	add 3 << \2
+	ld B, A
+	ld A, \1
+	and $0f << (4 - \2) ; get opposite half
+	or B ; combine with new value for this half
+	ld \1, A
+.lessThan5\@
+	ENDM
+
+	; for each half of each reg D,E,L, check if >= 5 and if so add 3
+	push BC
+	_Check5 L, 0
+	_Check5 L, 4
+	_Check5 E, 0
+	_Check5 E, 4
+	_Check5 D, 0
+	pop BC
+
+	; now do a massive left shift across DELBC
+	sla C
+	rl B
+	rl L
+	rl E
+	rl D
+
+	ld A, H
+	dec A
+	ld H, A
+	jr nz, .loop
+
+	ld C, L ; C is now more convenient than L from here, we want to use HL
+
+	; Now actually display digits in DEC
+	ld HL, WorkingGrid + 1*20 + 7 ; start at Y=1, X=7
+
+_DisplayDigit: MACRO ; args \1 register, \2 is either 0 or 1 for lower or upper half
+	ld A, \1
+IF \2 == 1
+	swap A
+ENDC
+	and $0f ; A = 0-9
+	add TileDigits ; A = tile of digit
+	ld [HL+], A
+	ENDM
+
+	_DisplayDigit D, 0
+	_DisplayDigit E, 1
+	_DisplayDigit E, 0
+	_DisplayDigit C, 1
+	_DisplayDigit C, 0
+
 	ret
 
 
