@@ -187,6 +187,13 @@ _DisplayLoop: MACRO ; args \1 = score to add, \2 = tile to display
 
 	call LoadNextLevel ; populate Level with new data
 	call EnableGameplay ; turn on input, etc and refresh screen
+
+	; Re-sync slow update loop so the first proper tick of the level is 1/8th of a sec
+	; from now.
+	ld A, [TimerCounterSlow]
+	and %11111000
+	ld [LastSlowTickNumber], A
+
 	ret
 
 
