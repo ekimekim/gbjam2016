@@ -43,7 +43,12 @@ UpdateFireman::
 .moveUpFinish
 
 	;--- FINISH Y ---
-	ld [HL], A
+	cp 16
+	jr c, .noMoveY ; A < 16 (Y=0, top edge)
+	cp 160
+	jr nc, .noMoveY ; A >= 160 (Y=44, bottom edge)
+	ld [HL], A ; actually move
+.noMoveY
 
 	;--- START X ---
 	inc HL
@@ -66,7 +71,12 @@ UpdateFireman::
 .moveLeftFinish
 
 	;--- FINISH X ---
-	ld [HL], A
+	cp 8
+	jr c, .noMoveX ; A < 8 (X=0, left edge)
+	cp 168
+	jr nc, .noMoveX ; A >= 168 (X=160, right edge)
+	ld [HL], A ; actually move
+.noMoveX
 
 	;--- SET TILE INDEX ---
 	inc HL
