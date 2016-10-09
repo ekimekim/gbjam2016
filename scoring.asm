@@ -15,7 +15,7 @@ DisableGameplay::
 	ld A, 1
 	ld [TimerUpdateLock], A ; disable fast update calls
 
-	; zero WorkingGrid
+	; zero WorkingGrid and sprites
 	ld B, 18 ; we're going to unroll 10x to do 20 bytes = 1 row at a time
 	ld HL, SP+0
 	; SP goes in AC for safekeeping
@@ -35,6 +35,8 @@ DisableGameplay::
 	ld L, C
 	ld SP, HL
 
+	call ClearWorkingSprites
+
 	ld HL, LCDControl
 	res 7, [HL] ; turn off screen!
 
@@ -42,7 +44,6 @@ DisableGameplay::
 	REPT 3
 	call CopyWorkingVars
 	ENDR
-	call ClearWorkingSprites
 
 	ld HL, LCDControl
 	set 7, [HL] ; everything's zeroed, safe to turn screen back on
@@ -59,6 +60,19 @@ EnableGameplay::
 	DI
 
 	call RenderBlocks
+	call ClearWorkingSprites
+
+	; if we're opening the title screen, init title screen stuff
+	ld A, [LevelNumber]
+	and A
+	jr nz, .notTitleScreen
+	call LoadTitleSprites
+	xor A
+	ld [EndTitleScreenFlag], A ; reset title screen end flag
+
+.notTitleScreen
+
+	call InitFireman
 
 	ld HL, LCDControl
 	res 7, [HL] ; turn off screen!

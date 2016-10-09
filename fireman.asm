@@ -128,6 +128,19 @@ UpdateFireman::
 
 	; input changed! 
 	ld A, [JoyIO]
+
+	bit 3, A ; pressing Start button
+	jp nz, .noStartButton
+	ld B, A ; store Joy state for safekeeping
+	ld A, [LevelNumber]
+	and A
+	jp nz, .noTitleScreen ; check if level is 0 (title screen)
+	ld A, 1
+	ld [EndTitleScreenFlag], A
+.noTitleScreen
+	ld A, B ; restore Joy state
+.noStartButton
+
 	bit 0, A
 	jp z, .anyInputDetected ; pressing A button;
 	bit 1, A
@@ -263,4 +276,18 @@ LoadButtons::
 	dec b
 	jp nz, .waitStart
 
+	ret
+
+
+; Set the player sprite's X and Y coords to the starting position
+InitFireman::
+	ld A, 8*11
+	ld HL, WorkingSprites
+	ld [HL+], A ; Y = 11
+	ld A, 8*10
+	ld [HL+], A ; X = 10
+	ld A, %00001101
+	ld [HL+], A ; tile = idle player
+	xor A
+	ld [HL], A ; flags = 0
 	ret

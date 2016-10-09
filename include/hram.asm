@@ -28,3 +28,6 @@ RunStepStateFlag EQU $ff85
 ; Note the initial value of 0, which says that game init "counts as" the first slow tick
 ; and the actual first slow tick happens 1/8th of a second later.
 LastSlowTickNumber EQU $ff86
+
+; Flag to indicate to main loop that you should end the title screen
+EndTitleScreenFlag EQU $ff87

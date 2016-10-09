@@ -24,6 +24,8 @@ Start::
 	call LoadScenarioNumber ; load level 0
 	call RenderBlocks
 	call ClearWorkingSprites
+	call LoadTitleSprites
+	call InitFireman
 
 	; Disable background while we're fucking with vram
 	xor A
@@ -113,6 +115,19 @@ Update::
 UpdateSlow::
 	call RunStep
 	call RenderBlocks
+
+	; if not title screen, check if level is over
+	ld A, [LevelNumber]
+	and A
+	jr z, .isTitleScreen
 	call CheckLevelEnd
+	jr .after
+.isTitleScreen
+	ld A, [EndTitleScreenFlag]
+	and A
+	jr z, .after ; if not set, keep going
+	call EndTitleScreen
+.after
+
 	ret
 
