@@ -36,3 +36,6 @@ EndTitleScreenFlag EQU $ff87
 ;   16-bit: block index. $ffff indicates not used.
 ;   8-bit signed: delta temperature
 ActionsToDo EQU $ff88 ; first available after = ff89 + 4*3 = ff94
+
+; Last frame of input, to diff with this frame to detect presses
+LastInput EQU $ff94

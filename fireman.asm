@@ -3,11 +3,6 @@ include "ioregs.asm"
 include "longcalc.asm"
 include "hram.asm"
 
-Section "Fireman Working RAM", WRAM0
-
-LastInput:
-	ds 0
-
 Section "Fireman Methods", ROM0
 
 InputWait EQU 4
