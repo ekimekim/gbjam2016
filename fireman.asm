@@ -2,6 +2,7 @@ include "vram.asm"
 include "ioregs.asm"
 include "longcalc.asm"
 include "hram.asm"
+include "tiledefs.asm"
 
 Section "Fireman Methods", ROM0
 
@@ -187,6 +188,12 @@ UpdateFireman::
 	ld E, L
 	; DE is now block index
 
+	ld HL, Level
+	REPT 3
+	LongAdd H,L, D,E, H,L
+	ENDR
+	; HL = addr of temp of block
+
 	ld A, [LastInput]
 		
 	bit 0, A
@@ -197,6 +204,24 @@ UpdateFireman::
 	jp .burnFinished
 	
 .buttonAInputDetected
+
+	ld A, [HL]
+	cp 64
+	jr nc, .noGraphicsShortcut ; already on fire
+	; graphics shortcut: instantly replace tile with that of low fire for relevant square
+	push HL
+	inc HL
+	inc HL ; HL = addr of flags of block in level
+	ld A, [HL]
+	and $0f ; A = flags
+	add TileLowFire
+	ld C, A ; C = tile number to set
+	ld HL, WorkingGrid
+	LongAdd H,L, D,E, H,L ; HL = WorkingGrid + index = addr of block's tile in working grid
+	ld [HL], C ; set tile in working grid
+	pop HL
+.noGraphicsShortcut
+
 	ld C, 0
 	ld A, BurnAmount
 	jr .after
@@ -212,12 +237,6 @@ UpdateFireman::
 	ld A, [RunStepStateFlag]
 	and A
 	jr nz, .addToActionsToDo
-
-	ld HL, Level
-	REPT 3
-	LongAdd H,L, D,E, H,L
-	ENDR
-	; HL = addr of temp of block
 
 	ld A, C
 	and A
