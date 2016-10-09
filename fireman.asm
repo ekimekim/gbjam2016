@@ -11,9 +11,9 @@ LastInput:
 Section "Fireman Methods", ROM0
 
 InputWait EQU 4
-BurnAmount EQU 32
-MinBurnAmount EQU 32
-CoolAmount EQU 64
+BurnAmount EQU 16
+MinBurnAmount EQU 64
+CoolAmount EQU 16
 
 
 UpdateFireman::
@@ -146,7 +146,27 @@ UpdateFireman::
 .anyInputDetected
 	
 	;--- SET BLOCKS ON FIRE ---
+
+	;Get x pos
+	ld DE, WorkingSprites
+	inc DE	
+	ld A, [DE]
+	; divide by 8
+	SRL A
+	SRL A
+	SRL A
 	
+	;remove x offset
+	sub 1 
+	jp c, .burnFinished ; out of bounds
+	
+	cp 20
+	jp nc, .burnFinished ; out of bounds
+
+	; HL = x pos
+	ld H, 0
+	ld L, A
+
 	; get pixel y
 	ld A, [WorkingSprites] 
 	; get block y, divide by 8 
@@ -164,41 +184,14 @@ UpdateFireman::
 	;get y block pos
 	ld C, A
 	
-	ld HL, Level ; level start
-	ld DE, 20 * 3 ; size of row
+	ld DE, 20 ; size of row
 	
-	; HL = Level + row size * y pos
+	; HL = x pos + row size * y pos
 	call Multiply
-	; HL is now start of target row
-	
-	;Get x pos
-	ld DE, WorkingSprites
-	inc DE	
-	ld A, [DE]
-	; divide by 8
-	SRL A
-	SRL A
-	SRL A
-	
-	;remove x offset
-	sub 1 
-	jp c, .burnFinished ; out of bounds
-	
-	cp 20
-	jp nc, .burnFinished ; out of bounds
+	ld D, H
+	ld E, L
+	; DE is now block index
 
-	;--- offset x --
-	ld B, A
-	sla B ; B = offset x * 2
-	add B ; A = offset x + offset x * 2 = offset x * 3. we know this won't carry, offset x too small
-	; HL += 3 * offset x
-	add L ; maybe set carry
-	ld L, A
-	ld A, H
-	adc 0 ; add 1 if carry set
-	ld H, A
-
-	;--- apply fire to HL ---
 	ld A, [LastInput]
 		
 	bit 0, A
@@ -209,75 +202,108 @@ UpdateFireman::
 	jp .burnFinished
 	
 .buttonAInputDetected
+	ld C, 0
+	ld A, BurnAmount
+	jr .after
+
+.buttonBInputDetected
+	ld C, 1
+	ld A, CoolAmount
+	
+.after
+	ld B, A
+
+	; If we aren't inside RunStep, apply the temp straight away
+	ld A, [RunStepStateFlag]
+	and A
+	jr nz, .addToActionsToDo
+
+	ld HL, Level
+	REPT 3
+	LongAdd H,L, D,E, H,L
+	ENDR
+	; HL = addr of temp of block
+
+	ld A, C
+	and A
+	jr nz, .subTempDirect
+
+.addTempDirect
 	ld A, [HL]
 	cp MinBurnAmount
 	jp nc, .alreadyOnFire
 		
-	;players need to see an change
+	; players need to see an change, if temp < 64 set temp = 64
 	ld A, MinBurnAmount
-	
-.alreadyOnFire
-	
-	ld B, BurnAmount
-	add B
-	
-	jp nc, .applyAToHL ; added fire
-	; too much fire
-	ld A, 255
-	
-	jp .applyAToHL ; done
-
-.buttonBInputDetected
-	ld A, [HL]
-	ld B, CoolAmount
-	sub B
-	
-	jp nc, .applyAToHL ; added cool
-	; too much cool
-	ld A, 0
-	
-	; done
-	
-.applyAToHL
 	ld [HL], A
-	
-	;TODO check game state
-	; 0: Add to true temp and call BlockToTile
-	; 1: Add to NewTemps
-	; 2: Pretend press didn't happen
-	
-	ld B, A ;Stash temperature
-	
-	;get y
-	ld A, [WorkingSprites] 
-	SRL A
-	SRL A
-	SRL A
-	sub 2
-	
-	ld C, A
-	ld HL, NewTemps ; level start
-	ld DE, 20 ; size of row
-	
-	; HL = Level + row size * y pos
-	call Multiply
-	
-	; get x
-	ld A, [WorkingSprites + 1] 
-	SRL A
-	SRL A
-	SRL A
-	sub 1
-	
-	add L
-	ld L, A
-	ld A, H
-	adc 0
-	ld H, A
-		
-.applyAToHLNewTemps
-	ld [HL], B ; pop temperature
-	
+	jr .burnFinished
+.alreadyOnFire
+	ld B, BurnAmount
+	ld A, [HL]
+	add B
+	jr nc, .noOverflowAddDirect
+	ld A, $ff
+.noOverflowAddDirect
+	ld [HL], A
+	jr .burnFinished
+
+.subTempDirect
+	ld A, [HL]
+	sub B
+	jr nc, .noUnderflowSubDirect
+	ld A, 0
+.noUnderflowSubDirect
+	ld [HL], A
+	jr .burnFinished
+
+.addToActionsToDo
+
+	; convert B to signed
+	ld A, C
+	and A
+	jr z, .noSub
+	xor A
+	sub B
+	ld B, A ; B = -B
+.noSub
+
+	ld HL, ActionsToDo
+	ld C, 4
+
+.loopToDo
+	; check if index match
+	ld A, [HL+]
+	cp D
+	jr nz, .noMatch
+	ld A, [HL]
+	cp E
+	jr z, .match
+.noMatch
+	dec HL ; reset HL to start of current entry
+	; check if empty
+	ld A, [HL+]
+	cp $ff
+	jr nz, .next
+	ld A, [HL]
+	cp $ff
+	jr nz, .next
+.empty
+	dec HL
+	ld [HL], D
+	inc HL
+	ld [HL], E ; set entry index = this block's index
+.match
+	inc HL
+	; HL = entry value, B = signed amount to add
+	ld A, [HL]
+	add B ; we are assuming this won't go outside range of -128 to 127
+	ld [HL], A
+	jr .burnFinished
+.next
+	dec C
+	jr nz, .loopToDo
+	; if we got this far and all actions full, just discard input
+
 .burnFinished
 	ret
 

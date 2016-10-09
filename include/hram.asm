@@ -19,8 +19,7 @@ LevelEndTickCount EQU $ff84
 ; Tracks current state of the RunStep method, which fast update uses to avoid some race cdns
 ; when interacting with temperature changes. State is one of:
 ; 0: Not running
-; 1: Computing new temperatures. Temperature changes should be added to NewTemps.
-; 2: Copying new temperatures to Level. Temperature changes cannot be reliably written.
+; 1: Computing new temperatures. Temperature changes should be added to ActionsToDo
 RunStepStateFlag EQU $ff85
 
 ; This tracks the value of the "tick number" (top 5 bits of TimerCounterSlow) at the time
@@ -31,3 +30,9 @@ LastSlowTickNumber EQU $ff86
 
 ; Flag to indicate to main loop that you should end the title screen
 EndTitleScreenFlag EQU $ff87
+
+; Player actions to perform at the end of current update step.
+; An array of 4 lots of following struct:
+;   16-bit: block index. $ffff indicates not used.
+;   8-bit signed: delta temperature
+ActionsToDo EQU $ff88 ; first available after = ff89 + 4*3 = ff94

@@ -389,9 +389,25 @@ ClearNewTemps:
 	ret
 
 
+; init actions to do to entries of ($ffff, 0)
+InitActionsToDo:
+	ld B, 4
+	ld HL, ActionsToDo
+.loop
+	ld A, $ff
+	ld [HL+], A
+	ld [HL+], A
+	xor A
+	ld [HL+], A
+	dec B
+	jr nz, .loop
+	ret
+
+
 ; Run a step of the simulation
 RunStep::
 	call ClearNewTemps
+	call InitActionsToDo
 
 	; set RunStep state to 1: populating new temps
 	ld A, 1
@@ -411,10 +427,6 @@ RunStep::
 	jr nz, .steploop
 	call RunStepOneBlock ; one last call with index 0
 
-	; set RunStep state to 2: copying new temps to actual temps
-	ld A, 2
-	ld [RunStepStateFlag], A
-
 	; now update temperatures according to NewTemps
 	ld BC, 20*18
 	ld HL, NewTemps
@@ -433,8 +445,60 @@ RunStep::
 	cp B
 	jr nz, .updateloop
 
+	; A mighty hack: Disabling interrupts to prevent input loop from firing while we update actions
+	; --- Disabled interrupts ---
+	DI
+
+	; Apply actions from ActionsToDo
+	ld HL, ActionsToDo
+	REPT 4
+	ld A, [HL]
+	cp $ff
+	jp z, .break ; first empty guarentees rest are empty
+	ld D, [HL]
+	inc HL
+	ld E, [HL] ; DE = index
+	inc HL
+	ld B, D
+	ld C, E
+	LongShiftL B,C ; BC = 2*index
+	LongAdd D,E, B,C, D,E ; DE = 3*index
+	LongAdd D,E, (Level & $ff00) >> 8, Level & $ff, D,E ; DE += Level, ie. DE = addr of temp of block
+	; Get value, apply to [DE]
+	ld A, [HL+]
+	ld B, A ; B = value to add or sub
+	and %10000000 ; zero if A is positive
+	jr nz, .subAction\@
+.addAction\@
+	ld A, [DE]
+	add B
+	jr nc, .noOverflow\@
+	ld A, $ff
+.noOverflow\@
+	; if we added temp, we want new temp to be 64 at minimum
+	cp 64
+	jr nc, .gotNewTemp\@
+	ld A, 64
+	jr .gotNewTemp\@
+.subAction\@
+	xor A
+	sub B
+	ld B, A ; B = -B (which is now positive)
+	ld A, [DE]
+	sub B
+	jr nc, .gotNewTemp\@
+	; underflow
+	xor A
+.gotNewTemp\@
+	ld [DE], A
+	ENDR
+.break
+
 	; set RunStep state to not running
 	xor A
 	ld [RunStepStateFlag], A
+
+	EI
+	; --- Enabled interrupts
 
 	ret
