@@ -2,8 +2,12 @@
 ; example tile map
 TileBlank EQU 0
 TileHighFire EQU 1
-TileDigits EQU 2
-TileMediumFire EQU $10
+TileDigits EQU 2 ; 10 long
+TileMediumFire EQU $10 ; 3 long
+TileArrow EQU $13
+TileA EQU $14
+TileB EQU $15
+TilePressStart EQU $16 ; 5 long
 TileLowFire EQU $20
 TileBurnt EQU $30
 TileNormal EQU $40
