@@ -45,8 +45,8 @@ UpdateFireman::
 	;--- FINISH Y ---
 	cp 16
 	jr c, .noMoveY ; A < 16 (Y=0, top edge)
-	cp 160
-	jr nc, .noMoveY ; A >= 160 (Y=44, bottom edge)
+	cp 159
+	jr nc, .noMoveY ; A >= 159 (Y=143, bottom edge + 1px of sprite size)
 	ld [HL], A ; actually move
 .noMoveY
 
@@ -73,8 +73,8 @@ UpdateFireman::
 	;--- FINISH X ---
 	cp 8
 	jr c, .noMoveX ; A < 8 (X=0, left edge)
-	cp 168
-	jr nc, .noMoveX ; A >= 168 (X=160, right edge)
+	cp 167
+	jr nc, .noMoveX ; A >= 167 (X=159, right edge + 1px of sprite size)
 	ld [HL], A ; actually move
 .noMoveX
 
