@@ -24,24 +24,24 @@ namespace wintools.tech
             writer.Write('\n');
         }
 
-        public static IEnumerable<Color> GetAllPixels(this Bitmap image)
+        public static IEnumerable<Color> GetAllPixelsSolid(this Bitmap image)
         {
             for (int y = 0; y < image.Height; y++)
             {
                 for (int x = 0; x < image.Width; x++)
                 {
-                    yield return image.GetPixel(x, y);
+                    yield return image.GetPixel(x, y).SetAlpha(255);
                 }
             }
         }
 
-        public static IEnumerable<KeyValuePair<Point, Color>> GetPixels(this Bitmap image)
+        public static IEnumerable<KeyValuePair<Point, Color>> GetPixelsSolid(this Bitmap image)
         {
             for (int y = 0; y < image.Height; y++)
             {
                 for (int x = 0; x < image.Width; x++)
                 {
-                    yield return new KeyValuePair<Point, Color>(new Point(x, y), image.GetPixel(x, y));
+                    yield return new KeyValuePair<Point, Color>(new Point(x, y), image.GetPixel(x, y).SetAlpha(255));
                 }
             }
         }

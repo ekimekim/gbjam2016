@@ -34,14 +34,16 @@ namespace pngtoasm
                 if (string.IsNullOrEmpty(srcDir))
                     throw new Exception("need assets directory");
                 var names = ParseNames(namesPath);
-                var assetFiles = Directory.GetFiles(srcDir, "*.png", SearchOption.AllDirectories).Where(f => !f.EndsWith("debug.png"));
+                var assetFiles = Directory.GetFiles(srcDir, "*.png", SearchOption.AllDirectories).Where(f => !f.EndsWith("debug.png") && !f.EndsWith("palette.png"));
+
+                var palette = GetPalette(srcDir);
 
                 var outputDir = Path.GetDirectoryName(outputPath);
                 if (!Directory.Exists(outputDir))
                     Directory.CreateDirectory(outputDir);
 
                 var writer = new StreamWriter(outputPath);
-                foreach (var line in assetFiles.SelectMany(t => GetTileLines(t, srcDir, debugColor, ignoreColor, names)))
+                foreach (var line in assetFiles.SelectMany(t => GetTileLines(t, srcDir, debugColor, ignoreColor, names, palette)))
                     writer.WriteLineUnix(line);
                 writer.Close();
                 Console.WriteLine(outputPath);
@@ -54,8 +56,15 @@ namespace pngtoasm
             }
         }
 
+        static Color[] GetPalette(string dir)
+        {
+            var defsPath = Path.Combine(dir, "palette.png");
+            var defsImage = Image.FromFile(defsPath) as Bitmap;
 
-        static List<string> GetTileLines(string filePath, string assetDir, Color? debugColor, Color? ignoreColor, List<string[]> names)
+            return defsImage.GetAllPixelsSolid().ToArray();
+        }
+
+        static List<string> GetTileLines(string filePath, string assetDir, Color? debugColor, Color? ignoreColor, List<string[]> names, Color[] palette)
         {
             var lines = new List<string>();
 
@@ -66,17 +75,12 @@ namespace pngtoasm
             if (image.Width % 8 != 0 || image.Height % 8 != 0)
                 throw new Exception(filePath + " isn't power of 8");
 
-            var colorPallet = image.GetAllPixels()
-                                    .Select(p => Color.FromArgb(p.R, p.G, p.G)) //Alpha fix
-                                    .Distinct()
-                                    .Where(p => !ignoreColor.HasValue || p != ignoreColor.Value)
-                                    .ToArray();
-
-            if (colorPallet.Count() > 4)
+            
+            if (palette.Count() > 4)
             {
                 if(debugColor.HasValue)
                 {
-                    PaintBadPixels(image, colorPallet, filePath, debugColor.Value);
+                    PaintBadPixels(image, palette, filePath, debugColor.Value);
                     return lines;
                 }
                 else
@@ -97,7 +101,8 @@ namespace pngtoasm
                         {
                             for (int x = 0; x < 8; x++)
                             {
-                                if (image.GetPixel((xTile * 8) + x, (yTile * 8) + y) == ignoreColor.Value)
+                                var pixel = image.GetPixel((xTile * 8) + x, (yTile * 8) + y).SetAlpha(255);
+                                if (pixel == ignoreColor.Value)
                                     ignoreThisTile = true;
                             }
                         }
@@ -115,8 +120,8 @@ namespace pngtoasm
                         line.Append("dw `");
                         for (int x = 0; x < 8; x++)
                         {
-                            var pixel = image.GetPixel((xTile * 8) + x, (yTile * 8) + y);
-                            var palletIndex = Array.IndexOf(colorPallet, Color.FromArgb(pixel.R, pixel.G, pixel.G)); //Alpha fix
+                            var pixel = image.GetPixel((xTile * 8) + x, (yTile * 8) + y).SetAlpha(255);
+                            var palletIndex = Array.IndexOf(palette, pixel); 
                             line.Append(palletIndex);
                         }
                         lines.Add(line.ToString());
@@ -147,7 +152,7 @@ namespace pngtoasm
         {
             Console.WriteLine("bad pixels: " + filePath);
             var badPixelsImage = new Bitmap(image);
-            var badColors = image.GetAllPixels().GroupBy(p => p)
+            var badColors = image.GetAllPixelsSolid().GroupBy(p => p)
                                                 .Select(g => new { Pixel = g.Key, Count = g.Count() })
                                                 .OrderBy(p => p.Count).Select(p => p.Pixel)
                                                 .Take(pixelValues.Length - 4).ToArray();
@@ -156,7 +161,7 @@ namespace pngtoasm
             {
                 for (int x = 0; x < image.Width; x++)
                 {
-                    if (badColors.Contains(image.GetPixel(x, y)))
+                    if (badColors.Contains(image.GetPixel(x, y).SetAlpha(255)))
                         badPixelsImage.SetPixel(x, y, debugColor);
                 }
             }
@@ -227,7 +232,7 @@ namespace pngtoasm
             {
                 //Pulled 2 extra args out
                 i += 2;
-                return Color.FromArgb(r, g, b); //Alpha fix
+                return Color.FromArgb(r, g, b).SetAlpha(255);
             }
             else
             {
@@ -237,7 +242,7 @@ namespace pngtoasm
                         continue;
 
                     var color = (Color)prop.GetValue(null, null);
-                    return Color.FromArgb(color.R, color.G, color.G); //Alpha fix
+                    return Color.FromArgb(color.R, color.G, color.G).SetAlpha(255);
                 }
             }
 
