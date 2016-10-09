@@ -10,6 +10,7 @@ namespace scenariotoasm
 {
     class Program
     {
+        static Random Rand;
         static int Main(string[] argsRaw)
         {
             if (argsRaw.Length < 2
@@ -25,6 +26,8 @@ scenariotoasm [-o output.csv] [-defpng blockdefs.png] [-defcsv blockdefs.csv][-s
 ");
                 return 1;
             }
+
+            Rand = new Random();
 
             var args = ParseArgs(argsRaw);
 
@@ -100,6 +103,11 @@ scenariotoasm [-o output.csv] [-defpng blockdefs.png] [-defcsv blockdefs.csv][-s
                     var hexVals = scenarioVals[xBlock, yBlock].Split(' ');
                     if (hexVals.Length != 3)
                         throw new Exception("Invalid hex vals " + scenarioVals[xBlock, yBlock]);
+
+                    var tileType = int.Parse(hexVals[2], System.Globalization.NumberStyles.HexNumber);
+                    tileType += 4 * Rand.Next(4);
+                    hexVals[2] = tileType.ToString("X");
+
                     writer.WriteLineUnix(string.Format("\tdb ${0}, ${1}, ${2}", hexVals[0], hexVals[1], hexVals[2]));
                 }
             }
