@@ -11,9 +11,9 @@ LastInput:
 Section "Fireman Methods", ROM0
 
 InputWait EQU 4
-BurnAmount EQU 2
-MinBurnAmount EQU 250
-CoolAmount EQU 10
+BurnAmount EQU 32
+MinBurnAmount EQU 32
+CoolAmount EQU 64
 
 
 UpdateFireman::
@@ -276,7 +276,7 @@ UpdateFireman::
 	ld H, A
 		
 .applyAToHLNewTemps
-	ld [HL], A
+	ld [HL], B ; pop temperature
 	
 .burnFinished
 	ret
