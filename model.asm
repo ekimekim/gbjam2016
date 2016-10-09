@@ -6,7 +6,7 @@ include "hram.asm"
 Section "Model Working RAM", WRAM0
 
 ; Stores the new temperature values while calculating a step
-NewTemps:
+NewTemps::
 	ds 20*18
 
 

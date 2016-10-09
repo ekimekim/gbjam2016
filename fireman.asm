@@ -12,7 +12,7 @@ Section "Fireman Methods", ROM0
 
 InputWait EQU 4
 BurnAmount EQU 2
-MinBurnAmount EQU 80
+MinBurnAmount EQU 250
 CoolAmount EQU 10
 
 
@@ -239,6 +239,43 @@ UpdateFireman::
 	; done
 	
 .applyAToHL
+	;ld [HL], A
+	
+	;TODO check game state
+	; 0: Add to true temp and call BlockToTile
+	; 1: Add to NewTemps
+	; 2: Pretend press didn't happen
+	
+	ld B, A ;Stash temperature
+	
+	;get y
+	ld A, [WorkingSprites] 
+	SRL A
+	SRL A
+	SRL A
+	sub 2
+	
+	ld C, A
+	ld HL, NewTemps ; level start
+	ld DE, 20 ; size of row
+	
+	; HL = Level + row size * y pos
+	call Multiply
+	
+	; get x
+	ld A, [WorkingSprites + 1] 
+	SRL A
+	SRL A
+	SRL A
+	sub 1
+	
+	add L
+	ld A, L
+	jp nc, .addLToHOk
+	inc H
+.addLToHOk	
+		
+.applyAToHLNewTemps
 	ld [HL], A
 	
 .burnFinished
