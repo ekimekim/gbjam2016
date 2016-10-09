@@ -42,7 +42,7 @@ Start::
 
 	; Initialize other settings
 	; Set pallettes
-	ld A, %01111000 ; 0 -> 2, 1 -> 0, 2 -> 1, 3 -> 3. 0 before map is transparent, so 2 after map is transparent
+	ld A, %11010010 ; 0 -> 2, 1 -> 0, 2 -> 1, 3 -> 3. 0 before map is transparent, so 2 after map is transparent
 	ld [TileGridPalette], A
 	ld [SpritePaletteTransparent], A
 	ld [SpritePaletteSolid], A
