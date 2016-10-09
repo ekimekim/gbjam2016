@@ -13,6 +13,9 @@ section "Main", ROM0
 Start::
 	DI ; disable interrupts until we set a few things up
 
+	xor A
+	ld [SoundControl], A ; disable sound quickly to avoid weird noise
+
 	; Set stack to top of internal RAM
 	ld SP, StackTop
 

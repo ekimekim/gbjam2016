@@ -38,6 +38,9 @@ TimerControl EQU $ff07
 InterruptFlags EQU $ff0f
 
 ; $ff10 - $ff3f are sound registers, which I'm not gonna touch.
+; Except for this one: Sound control. Sets individual channels on or off for bits 0-3,
+; sets all sound on/off for bit 7. You should set this to 0 on start to disable sound.
+SoundControl EQU $ff26
 
 ; "LCDC" LCD control register. Defaults to $91. Write to these bits to control the display mode:
 ; 0: Background and Window display off/on
