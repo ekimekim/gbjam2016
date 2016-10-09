@@ -69,7 +69,6 @@ EnableGameplay::
 	REPT 3
 	call CopyWorkingVars ; update vram
 	ENDR
-	ld HL, LCDControl
 
 	; if we're opening the title screen, init title screen stuff
 	ld A, [LevelNumber]
@@ -80,6 +79,7 @@ EnableGameplay::
 	ld [EndTitleScreenFlag], A ; reset title screen end flag
 .notTitleScreen
 
+	ld HL, LCDControl
 	set 7, [HL] ; turn on screen
 
 	xor A

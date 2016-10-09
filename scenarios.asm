@@ -13,6 +13,7 @@ Section "Scenario loading methods", ROM0
 
 LevelDataSize EQU EndLevelData - StartLevelData
 NumLevels EQU LevelDataSize / LevelSize
+PRINTT "Got {NumLevels} scenarios\n"
 
 IF LevelDataSize % LevelSize != 0
 FAIL "Scenario data is {LevelDataSize} bytes, expected a multiple of {LevelSize}"
