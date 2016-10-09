@@ -85,6 +85,8 @@ Score::
 	; E: Number of unburnt trees
 	ld HL, Level+1
 	ld BC, 20*18
+	ld D, 0
+	ld E, 0
 .countLoop
 	; HL = addr of fuel of block
 	ld A, [HL+] ; HL = addr of flags of block
@@ -144,6 +146,10 @@ Score::
 
 	; Macro to help define two near-identical sections below
 _DisplayLoop: MACRO ; args \1 = score to add, \2 = tile to display
+	; Special case, D = 0 to begin with
+	ld A, D
+	and A
+	jr z, .skipAll\@
 .displayLoop\@
 	push BC
 	call WaitForScoreDelay
@@ -168,6 +174,7 @@ _DisplayLoop: MACRO ; args \1 = score to add, \2 = tile to display
 .noNextRow\@
 	dec D ; one less thing to display
 	jr nz, .displayLoop\@
+.skipAll\@
 	ENDM
 
 	_DisplayLoop 10, TileNormal + 2 ; normal building variant 1
