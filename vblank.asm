@@ -9,11 +9,10 @@ Section "Working Background Grid", WRAMX
 WorkingGrid::
 	ds 20*18
 
-NUM_SPRITES EQU 3
 ; WorkingSprites is an array of sprite structs (OAM entries)
 ; You should write things here for later copying to true OAM memory on a VBlank
 WorkingSprites::
-	ds 4 * NUM_SPRITES
+	ds 4 * NumSprites
 EndWorkingSprites:
 WorkingSpritesSize EQU EndWorkingSprites - WorkingSprites
 

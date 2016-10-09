@@ -13,3 +13,6 @@ TileGrid EQU $9800
 AltTileGrid EQU $9c00
 
 SpriteTable EQU $fe00
+
+; How many working sprite slots to have
+NumSprites EQU 3

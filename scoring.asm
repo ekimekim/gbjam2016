@@ -62,16 +62,6 @@ EnableGameplay::
 	call RenderBlocks
 	call ClearWorkingSprites
 
-	; if we're opening the title screen, init title screen stuff
-	ld A, [LevelNumber]
-	and A
-	jr nz, .notTitleScreen
-	call LoadTitleSprites
-	xor A
-	ld [EndTitleScreenFlag], A ; reset title screen end flag
-
-.notTitleScreen
-
 	call InitFireman
 
 	ld HL, LCDControl
@@ -80,6 +70,16 @@ EnableGameplay::
 	call CopyWorkingVars ; update vram
 	ENDR
 	ld HL, LCDControl
+
+	; if we're opening the title screen, init title screen stuff
+	ld A, [LevelNumber]
+	and A
+	jr nz, .notTitleScreen
+	call LoadTitleSprites
+	xor A
+	ld [EndTitleScreenFlag], A ; reset title screen end flag
+.notTitleScreen
+
 	set 7, [HL] ; turn on screen
 
 	xor A

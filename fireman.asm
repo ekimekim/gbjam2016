@@ -311,10 +311,10 @@ LoadButtons::
 
 ; Set the player sprite's X and Y coords to the starting position
 InitFireman::
-	ld A, 8*11
+	ld A, 8*11 + 16
 	ld HL, WorkingSprites
 	ld [HL+], A ; Y = 11
-	ld A, 8*10
+	ld A, 8*10 + 8
 	ld [HL+], A ; X = 10
 	ld A, %00001101
 	ld [HL+], A ; tile = idle player

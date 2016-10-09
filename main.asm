@@ -24,7 +24,6 @@ Start::
 	call LoadScenarioNumber ; load level 0
 	call RenderBlocks
 	call ClearWorkingSprites
-	call LoadTitleSprites
 	call InitFireman
 
 	; Disable background while we're fucking with vram
@@ -34,6 +33,7 @@ Start::
 	; Initialize VRAM
 	call LoadTileData
 	call ClearSpriteData
+	call LoadTitleSprites
 	; We have to call vblank update routine 3 times since it only does a third each time
 	; (since under normal circumstances it has to fit in VBlank)
 	call CopyWorkingVars
@@ -42,7 +42,7 @@ Start::
 
 	; Initialize other settings
 	; Set pallettes
-	ld A, %11100100
+	ld A, %01111000 ; 0 -> 2, 1 -> 0, 2 -> 1, 3 -> 3. 0 before map is transparent, so 2 after map is transparent
 	ld [TileGridPalette], A
 	ld [SpritePaletteTransparent], A
 	ld [SpritePaletteSolid], A
