@@ -239,7 +239,7 @@ UpdateFireman::
 	; done
 	
 .applyAToHL
-	;ld [HL], A
+	ld [HL], A
 	
 	;TODO check game state
 	; 0: Add to true temp and call BlockToTile
@@ -270,10 +270,10 @@ UpdateFireman::
 	sub 1
 	
 	add L
-	ld A, L
-	jp nc, .addLToHOk
-	inc H
-.addLToHOk	
+	ld L, A
+	ld A, H
+	adc 0
+	ld H, A
 		
 .applyAToHLNewTemps
 	ld [HL], A
