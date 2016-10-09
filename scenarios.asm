@@ -18,21 +18,6 @@ IF LevelDataSize % LevelSize != 0
 FAIL "Scenario data is {LevelDataSize} bytes, expected a multiple of {LevelSize}"
 ENDC
 
-LoadScenarioPaletteTown::
-	ld HL, ScenarioPaletteTown
-	call LoadScenarioHL
-	ret
-	
-LoadScenarioSpiral::
-	ld HL, ScenarioSpiral
-	call LoadScenarioHL
-	ret
-
-LoadScenarioSouthVillage::
-	ld HL, ScenarioSouthVillage
-	call LoadScenarioHL
-	ret
-
 ; Loads a level from an address given in HL. Clobbers all except HL.
 LoadScenarioHL::
 	ld BC, LevelSize
