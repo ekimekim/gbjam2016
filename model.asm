@@ -87,6 +87,19 @@ Modulo5:
 	ret
 
 
+; HL = neighbor's block index, B = amount to transfer. \1 = amount to add to index
+; Clobbers A, DE.
+TransferNeighbor: MACRO
+	LongAdd H,L, ((NewTemps + (\1)) & $ff00) >> 8, (NewTemps + (\1)) & $ff, D,E
+	ld A, [DE]
+	add B
+	jr nc, .noOverflow\@
+	ld A, $ff
+.noOverflow\@
+	ld [DE], A
+	ENDM
+
+
 ; Run simulation step for block with index DE
 ; Here is the algorithm for each block as currently coded:
 ; If temp > 64, the block burns:
@@ -211,16 +224,19 @@ RunStepOneBlock:
 
 	pop DE
 	push BC ; save old temp and new temp so far
-	push DE ; restore and re-save block index
+	ld H, D
+	ld L, E ; save index in HL
 
 	; calculate how much heat transfer as (temperature+1) / 32
 	inc B
 	jr nc, .noOverflowFudge
 	ld B, $ff
 .noOverflowFudge
-	REPT 5
-	srl B
-	ENDR
+	ld A, B
+	and %11100000
+	swap A ; original bits 76543210 are now xxxx765x
+	srl A ; and now xxxxx765, ie. /32
+	ld B, A
 
 	ld C, 4 ; we'll use this flag to count our neighbors
 
@@ -232,23 +248,18 @@ RunStepOneBlock:
 	cp 20 ; if we borrow (carry), DE < 20 and so we're in the first row
 	jr c, .noUpperNeighbor
 .upperNeighbor
-	LongSub D,E, 0,20, D,E
-	call TransferNeighbor
+	TransferNeighbor -20
 	dec C
 
 .noUpperNeighbor
-	pop DE
-	push DE ; restore and re-save block index
-
-	LongAdd D,E, 0,20, D,E
-	ld A, D
+	ld A, H ; H is high half of index
 	cp $01
-	jr nz, .lowerNeighbor ; if D != 1, we definitely have a lower neighbor
-	ld A, E
-	cp $68
-	jr nc, .noLowerNeighbor ; if D == 1 and E >= $68, we're off the end, no lower neighbor
+	jr nz, .lowerNeighbor ; if high byte != 1, we definitely have a lower neighbor
+	ld A, L
+	cp $54
+	jr nc, .noLowerNeighbor ; if high byte == 1 and low byte >= $54, we'd be off the end after adding 20 (1 row), no lower neighbor
 .lowerNeighbor
-	call TransferNeighbor
+	TransferNeighbor 20
 	dec C
 
 .noLowerNeighbor
@@ -258,8 +269,8 @@ RunStepOneBlock:
 	; Else, we move on to calculating index/4 % 5. If index % 4 == 0 and index/4 % 5 == 0, index % 20 == 0.
 	; If index % 4 == 3 and index/4 % 5 == 4, index % 20 == 19.
 
-	pop DE
-	push DE ; restore and re-save block index
+	ld D, H
+	ld E, L ; restore DE index from HL
 
 	; mod 4 is very easy - take the last two bits
 	ld A, E
@@ -283,26 +294,16 @@ RunStepOneBlock:
 	; otherwise this means A = 4 and D = 4, so we have no right neighbor
 
 .hasLeftNeighborOnly
-	pop DE
-	push DE ; restore and re-save block index
-	dec DE ; left neighbor = index - 1
-	call TransferNeighbor
+	TransferNeighbor -1
 	dec C
 	jp .afterNeighbors
 
 .hasBothSideNeighbors
-	pop DE
-	push DE ; restore and re-save block index
-	dec DE ; left neighbor = index - 1
-	call TransferNeighbor
+	TransferNeighbor -1
 	dec C
 
 .hasRightNeighborOnly
-	; DE might not be set yet, so we have to do this again
-	pop DE
-	push DE ; restore and re-save block index
-	inc DE ; right neighbor = index + 1
-	call TransferNeighbor
+	TransferNeighbor 1
 	dec C
 
 .afterNeighbors
@@ -330,14 +331,15 @@ RunStepOneBlock:
 	ld C, A ; C = 4-C, note C is 2-4
 
 	ld A, D ; A = loss so far
-	; A += B * C
+	; A += B * C, C is 2-4
+	add B
+	dec C
 .multloop
 	add B
 	dec C
 	jr nz, .multloop
 	; A = total loss
 
-	pop DE ; restore block index
 	pop BC ; restore new temp to C
 	ld B, A
 	ld A, C
@@ -345,9 +347,8 @@ RunStepOneBlock:
 	; We know this can't underflow. C >= old temp, B is max old temp / 8
 	ld C, A ; C = final new temp
 
-	; calculate NewTemps address
-	ld HL, NewTemps
-	LongAdd H,L, D,E, H,L
+	; calculate NewTemps address, put it in HL
+	LongAdd H,L, (NewTemps & $ff00) >> 8, NewTemps & $ff, H,L
 
 	; add final temp to NewTemps
 	ld A, [HL]
@@ -358,20 +359,6 @@ RunStepOneBlock:
 .noMaxTemp2
 	ld [HL], A
 
-	ret
-
-
-; DE = neighbor's block index, B = amount to transfer
-; Clobbers A, HL.
-TransferNeighbor:
-	ld HL, NewTemps
-	LongAdd H,L, D,E, H,L
-	ld A, [HL]
-	add B
-	jr nc, .noOverflow
-	ld A, $ff
-.noOverflow
-	ld [HL], A
 	ret
 
 
