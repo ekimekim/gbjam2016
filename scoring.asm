@@ -207,6 +207,8 @@ _DisplayLoop: MACRO ; args \1 = score to add, \2 = tile to display
 	halt ; this will get interrputed by 64Hz timer, which is good enough for a polling interval
 	jr .waitForPress
 .gotPress
+	; record this input so that the player doesn't immediately start a fire on first tick
+	ld [LastInput], A
 
 	call LoadNextLevel ; populate Level with new data
 	call EnableGameplay ; turn on input, etc and refresh screen
