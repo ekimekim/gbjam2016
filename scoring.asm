@@ -37,6 +37,12 @@ DisableGameplay::
 
 	call ClearWorkingSprites
 
+	; Block until vblank, when it's safe to turn off the screen
+.waitForVBlank
+	ld A, [LCDYCoordiate]
+	cp 144
+	jr c, .waitForVBlank
+
 	ld HL, LCDControl
 	res 7, [HL] ; turn off screen!
 
