@@ -47,14 +47,16 @@ EndTitleScreen::
 	call InitFireman
 
 	; now we turn off the screen, load level data, then turn it on
-	ld HL, LCDControl
-	res 7, [HL]
+	call TurnOffScreen
 	call ClearSpriteData
 	REPT 3
 	call CopyWorkingVars
 	ENDR
 	ld HL, LCDControl
 	set 7, [HL]
+
+	ld HL, InterruptFlags
+	res 0, [HL]
 
 	EI
 	; --- enabled interrupts ---

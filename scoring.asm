@@ -37,14 +37,7 @@ DisableGameplay::
 
 	call ClearWorkingSprites
 
-	; Block until vblank, when it's safe to turn off the screen
-.waitForVBlank
-	ld A, [LCDYCoordiate]
-	cp 144
-	jr c, .waitForVBlank
-
-	ld HL, LCDControl
-	res 7, [HL] ; turn off screen!
+	call TurnOffScreen
 
 	; force update VRAM and clear sprites
 	REPT 3
@@ -53,6 +46,9 @@ DisableGameplay::
 
 	ld HL, LCDControl
 	set 7, [HL] ; everything's zeroed, safe to turn screen back on
+
+	ld HL, InterruptFlags
+	res 0, [HL]
 
 	EI
 	; --- enabled interrupts ---
@@ -70,8 +66,7 @@ EnableGameplay::
 
 	call InitFireman
 
-	ld HL, LCDControl
-	res 7, [HL] ; turn off screen!
+	call TurnOffScreen
 	REPT 3
 	call CopyWorkingVars ; update vram
 	ENDR
@@ -90,6 +85,9 @@ EnableGameplay::
 
 	xor A
 	ld [TimerUpdateLock], A ; enable fast update calls
+
+	ld HL, InterruptFlags
+	res 0, [HL]
 
 	EI
 	; --- enabled interrupts ---

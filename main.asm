@@ -30,8 +30,7 @@ Start::
 	call InitFireman
 
 	; Disable background while we're fucking with vram
-	xor A
-	ld [LCDControl], A
+	call TurnOffScreen
 
 	; Initialize VRAM
 	call LoadTileData
@@ -134,3 +133,16 @@ UpdateSlow::
 
 	ret
 
+
+TurnOffScreen::
+	push AF
+    ; Block until vblank, when it's safe to turn off the screen
+.waitForVBlank
+    ld A, [LCDYCoordiate]
+    cp 144
+    jr c, .waitForVBlank
+	ld A, [LCDControl]
+	and %01111111
+	ld [LCDControl], A
+	pop AF
+	ret
